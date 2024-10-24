@@ -1,0 +1,22 @@
+{
+  "singleQuote": true,
+  "useTabs": false,
+  "tabWidth": 4,
+  "semi": true,
+  "bracketSpacing": true,
+  "trailingComma": "all",
+  "bracketSameLine": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "printWidth": 160,
+  "overrides": [
+    {
+      "files": [
+        "*.json",
+        "*.prettierrc"
+      ],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}
