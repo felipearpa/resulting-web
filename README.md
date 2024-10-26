@@ -40,7 +40,7 @@ console.log(failureResult.isSuccess); // Output: false
 To run tests, use:
 
 ```bash
-npm test
+npm run test
 ```
 
 Jest will automatically detect all test files and run them. For more advanced testing, refer to the [Jest documentation](https://jestjs.io/).
