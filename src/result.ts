@@ -34,6 +34,12 @@ export class Result<Value> {
         return this.result instanceof FailureType;
     }
 
+    /**
+     * Retrieves the value stored in the result.
+     * If the result is a success, returns the success value.
+     * If the result is a failure, returns the error.
+     * @return {unknown} The value from a successful result or the error from a failed result.
+     */
     protected get value(): unknown {
         if (this.isSuccess) return (this.result as SuccessType<Value>).value;
         return (this.result as FailureType).error;
