@@ -1,9 +1,8 @@
 # Result
 
-The Result class is a type to handle success and failure scenarios in a functional style. It encapsulates a result, either a Success with a value or a Failure
-with an error, providing methods to operate on them safely.
-
-**This type is based on Kotlin Result type**.
+The **Result** package provides a `Result` class designed to handle success and failure scenarios in a functional programming style. It encapsulates a result,
+which can either be a `Success` with a value or a `Failure` with an error, offering methods to safely operate on these results. This type is based on
+the `Kotlin` `Result` type.
 
 ## Installation
 
