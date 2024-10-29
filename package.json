@@ -1,10 +1,10 @@
 {
-  "name": "@felipearpa/result",
+  "name": "@felipearpa/resulting",
   "version": "1.0.0",
   "description": "Result type based on Kotlin Result type",
   "repository": {
     "type": "git",
-    "url": "https://github.com/felipearpa/result-web.git"
+    "url": "https://github.com/felipearpa/resulting-web.git"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
