@@ -1,4 +1,4 @@
-class SuccessType<Value> {
+class SuccessType<Value extends NonNullable<unknown>> {
     readonly type = 'success';
 
     constructor(public readonly value: Value) {}
@@ -10,12 +10,12 @@ class FailureType {
     constructor(public readonly error: Error) {}
 }
 
-type ResultType<Value> = SuccessType<Value> | FailureType;
+type ResultType<Value extends NonNullable<unknown>> = SuccessType<Value> | FailureType;
 
 /**
  * A discriminated union that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error.
  */
-export class Result<Value> {
+export class Result<Value extends NonNullable<unknown>> {
     /**
      * Returns true if this instance represents a successful outcome. In this case isFailure returns false.
      *
@@ -54,7 +54,7 @@ export class Result<Value> {
      * @param {Value} value - The value representing a successful outcome.
      * @returns {Result<Value>} The instance that encapsulates the given value as successful value.
      */
-    static success = <Value>(value: Value): Result<Value> => new Result<Value>(new SuccessType(value));
+    static success = <Value extends NonNullable<unknown>>(value: Value): Result<Value> => new Result<Value>(new SuccessType(value));
 
     /**
      * Returns an instance that encapsulates the given error as failure.
@@ -63,7 +63,7 @@ export class Result<Value> {
      * @param {Error} error - The error representing a failure outcome.
      * @returns {Result<Value>} The instance that encapsulates the given error as failure.
      */
-    static failure = <Value>(error: Error): Result<Value> => new Result<Value>(new FailureType(error));
+    static failure = <Value extends NonNullable<unknown>>(error: Error): Result<Value> => new Result<Value>(new FailureType(error));
 
     /**
      * Returns the encapsulated value if this instance represents success or null if it is failure.
@@ -113,7 +113,7 @@ export class Result<Value> {
      * @return {NewValue} The encapsulated value if this instance represents success or the result of onFailure function for the encapsulated Error if it is
      * failure.
      */
-    getOrElse<NewValue, Value extends NewValue>(this: Result<Value>, onFailure: (error: Error) => NewValue): NewValue {
+    getOrElse<NewValue, Value extends NonNullable<unknown> & NewValue>(this: Result<Value>, onFailure: (error: Error) => NewValue): NewValue {
         const error = this.errorOrNull();
         if (error == null) {
             return this.value as Value;
@@ -141,7 +141,7 @@ export class Result<Value> {
      * @return {Result<NewValue>} The encapsulated result of the given transform function applied to the encapsulated value if this instance represents success
      * or the original encapsulated error if it is failure.
      */
-    map<NewValue>(transform: (value: Value) => NewValue): Result<NewValue> {
+    map<NewValue extends NonNullable<unknown>>(transform: (value: Value) => NewValue): Result<NewValue> {
         if (this.isSuccess) return Result.success(transform(this.value as Value));
         return Result.failure(this.value as Error);
     }
@@ -172,7 +172,7 @@ export class Result<Value> {
      * @return {Result<NewValue>} The encapsulated result of the given transform function applied to the encapsulated error if this instance represents
      * failure or the original encapsulated value if it is success.
      */
-    recover<NewValue, Value extends NewValue>(this: Result<Value>, transform: (error: Error) => NewValue): Result<NewValue> {
+    recover<NewValue extends NonNullable<unknown>, Value extends NewValue>(this: Result<Value>, transform: (error: Error) => NewValue): Result<NewValue> {
         const error = this.errorOrNull();
         if (error == null) {
             return this;
@@ -185,7 +185,7 @@ export class Result<Value> {
      *
      * @template Value
      * @param {(Value) => void} action - The callback function to be executed if the result is successful.
-     * @return {Result<Value>} The original Result unchanged
+     * @return {Result<Value>} The original Result unchanged.
      */
     onSuccess(action: (value: Value) => void): Result<Value> {
         if (this.isSuccess) action(this.value as Value);
