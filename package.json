@@ -1,6 +1,6 @@
 {
   "name": "@felipearpa/resulting",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Result type based on Kotlin Result type",
   "repository": {
     "type": "git",
@@ -29,7 +29,10 @@
   },
   "keywords": [
     "felipearpa",
-    "result"
+    "result",
+    "success",
+    "failure",
+    "try-catch"
   ],
   "author": "Felipe Arcila Parra",
   "license": "ISC",

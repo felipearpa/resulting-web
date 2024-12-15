@@ -66,7 +66,7 @@ A discriminated union that encapsulates a successful outcome with a value of typ
 
 - #### success
 
-`success(value: Value)`
+`static success(value: Value)`
 
 Returns an instance that encapsulates the given value as successful value.
 
@@ -78,7 +78,7 @@ const result = Result.success('action succeeded');
 
 - #### failure
 
-`failure(error: Error)`
+`static failure(error: Error)`
 
 Returns an instance that encapsulates the given error as failure.
 
