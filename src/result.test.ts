@@ -358,4 +358,74 @@ describe('Result', () => {
             thenTheErrorRepresentationStringIsRetrieved(retrievedRepresentationString);
         });
     });
+
+    describe('Result<void>', () => {
+        const voidSuccessResult = Result.success();
+        const voidFailureResult = Result.failure<void>(error);
+
+        test('given a void success result when retrieving the value safely then the value is retrieved', () => {
+            const unsafeWhenGetOrThrowIsExecuted = () => {
+                voidSuccessResult.getOrThrow();
+            };
+
+            expect(unsafeWhenGetOrThrowIsExecuted).not.toThrow(Error);
+        });
+
+        test('given a void error result when retrieving the value safely then the error is raised', () => {
+            const unsafeWhenGetOrThrowIsExecuted = () => {
+                voidFailureResult.getOrThrow();
+            };
+
+            expect(unsafeWhenGetOrThrowIsExecuted).toThrow(Error);
+        });
+    });
+
+    describe('Result.success type safety', () => {
+        test('given an implicit void success result when instantiated without annotation then is allowed', () => {
+            const result = Result.success();
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an explicit void success result when instantiated without annotation then is allowed', () => {
+            const result: Result<void> = Result.success();
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an implicit void success result when instantiated with annotation then is allowed', () => {
+            const result = Result.success<void>();
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an explicit void success result when instantiated with annotation then is allowed', () => {
+            const result: Result<void> = Result.success<void>();
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an implicit void success result when is instanced with annotation and undefined as parameter then is allowed', () => {
+            const result = Result.success<void>(undefined);
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an explicit void success result when is instanced with annotation and undefined as parameter then is allowed', () => {
+            const result: Result<void> = Result.success<void>(undefined);
+            expect(result).toBeInstanceOf(Result<void>);
+        });
+
+        test('given an undefined success result when is instanced then is allowed', () => {
+            const result = Result.success<undefined>();
+            expect(result).toBeInstanceOf(Result<undefined>);
+        });
+
+        test('given a string success result when is instanced then is allowed', () => {
+            const result = Result.success('hello');
+            expect(result).toBeInstanceOf(Result<string>);
+            expect(result.getOrNull()).toBe('hello');
+        });
+
+        test('given a number success result when is instanced then is allowed', () => {
+            const result = Result.success(42);
+            expect(result).toBeInstanceOf(Result<number>);
+            expect(result.getOrNull()).toBe(42);
+        });
+    });
 });

@@ -4,9 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2024-11-01
-### 🔒 Improvements
-- **Enhanced** the `Result` type by adding `extends NonNullable<unknown>` to prevent the use of `null` or `undefined` as possible result types.
+### **How to Use This Changelog**
+This changelog documents all releases and notable changes. Use this to understand what’s new, improved, or fixed in each version.
+
+---
+
+## [1.1.0] - 2024-12-15
+
+### ✨ New Features
+- **Added** support for using `Result.success()` without a value, specifically as `Result.success<void>()`, to represent successful operations with no result.
+
+#### Example
+
+```typescript
+const result = Result.success(); // ✅ Represents a success with no value.
+const voidResult = Result.success<void>(); // ✅ Explicitly denotes a success with void type.
+```
+
+#### Notes
+
+- **Previously** - the only way to create a `Result.success<void>` was using `Result.success<void>(undefined)`.
 
 ---
 
@@ -20,8 +37,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Implemented** `fold` method to handle both success and failure cases in one function.
 - **Provided** utility methods like `onSuccess` and `onFailure` for executing actions based on the result type.
 - **Added** `toString` method to convert the `Result` object to a string representation for easy logging and debugging.
-
----
-
-### **How to Use This Changelog**
-This changelog documents all releases and notable changes. Use this to understand what’s new, improved, or fixed in each version.
