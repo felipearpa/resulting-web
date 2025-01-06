@@ -1,6 +1,7 @@
 # Resulting
 
-The **Resulting** package provides a `Result` class designed to handle success and failure scenarios in a functional programming style. It encapsulates a result,
+The **Resulting** package provides a `Result` class designed to handle success and failure scenarios in a functional programming style. It encapsulates a
+result,
 which can either be a `Success` with a value or a `Failure` with an error, offering methods to safely operate on these results. This type is based on
 the `Kotlin` `Result` type.
 
@@ -50,7 +51,8 @@ If you would like to contribute, please open a pull request or submit an issue. 
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software for both personal and commercial use. There are no
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software for both personal and commercial use. There
+are no
 restrictions on usage.
 
 You can now add this section to your README.md to reflect that the project is open source and free to use. Let me know if you’d like to include additional
@@ -253,6 +255,8 @@ if (transformedResult.isSuccess) {
 
 `fold<NewValue>(onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue): NewValue`
 
+`fold<NewValue>(handlers: { onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue }): NewValue`
+
 Returns the result of onSuccess for the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated error
 if it is failure.
 
@@ -272,12 +276,38 @@ console.log(transformedResult); // Output: Success! The value is: 42
 ```typescript
 import { Result } from '@felipearpa/resulting';
 
+const result: Result<number> = Result.success(42);
+
+const transformedResult = result.fold({
+    onSuccess: (value) => `Success! The value is ${value}`,
+    onFailure: (error) => `Failure! The error is: ${error.message}`
+});
+
+console.log(transformedResult); // Output: Success! The value is: 42
+```
+
+```typescript
+import { Result } from '@felipearpa/resulting';
+
 const result: Result<number> = Result.failure(Error('action failed'));
 
 const transformedResult = result.fold(
     value => `Success! The value is ${value}`,
     error => `Failure! The error is: ${error.message}`
 );
+
+console.log(transformedResult); // Output: Failure! The error is: action failed
+```
+
+```typescript
+import { Result } from '@felipearpa/resulting';
+
+const result: Result<number> = Result.failure(Error('action failed'));
+
+const transformedResult = result.fold({
+    onSuccess: (value) => `Success! The value is ${value}`,
+    onFailure: (error) => `Failure! The error is: ${error.message}`
+});
 
 console.log(transformedResult); // Output: Failure! The error is: action failed
 ```

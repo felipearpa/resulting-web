@@ -168,10 +168,37 @@ export class Result<Value> {
      * @return {NewValue} The result of onSuccess for the encapsulated value if this instance represents success or the result of onFailure function for the
      * encapsulated error if it is failure.
      */
-    fold<NewValue>(onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue): NewValue {
-        const error = this.errorOrNull();
-        if (error == null) return onSuccess(this.value as Value);
-        return onFailure(error);
+    fold<NewValue>(onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue): NewValue;
+
+    /**
+     * Returns the result of onSuccess for the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated
+     * error if it is failure.
+     *
+     * @template Value
+     * @template NewValue
+     * @param {Object} handlers - An object containing the functions to handle success and failure states.
+     * @param {(Value) => NewValue} handlers.onSuccess - Function to process the successful value.
+     * @param {(Error) => NewValue} handlers.onFailure - Function to process the error value.
+     * @return {NewValue} The result of the executed handler function.
+     */
+    fold<NewValue>(handlers: { onSuccess: (value: Value) => NewValue; onFailure: (error: Error) => NewValue }): NewValue;
+
+    fold<NewValue>(
+        handlers:
+            | {
+                  onSuccess: (value: Value) => NewValue;
+                  onFailure: (error: Error) => NewValue;
+              }
+            | ((value: Value) => NewValue),
+        onFailure?: (error: Error) => NewValue,
+    ): NewValue {
+        if (typeof handlers === 'object') {
+            const { onSuccess, onFailure } = handlers;
+            return this.fold(onSuccess, onFailure);
+        }
+
+        if (this.isSuccess) return (handlers as (value: Value) => NewValue)((this.result as { value: Value }).value);
+        return (onFailure as (error: Error) => NewValue)((this.result as { error: Error }).error);
     }
 
     /**

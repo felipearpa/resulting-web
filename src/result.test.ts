@@ -213,10 +213,6 @@ describe('Result', () => {
     });
 
     describe('fold', () => {
-        const whenFolding = (result: Result<string>, onSuccess: (value: string) => string, onFailure: (error: Error) => string) => {
-            return result.fold(onSuccess, onFailure);
-        };
-
         const thenTheSuccessTransformationIsApplied = (retrievedValue: string) => {
             expect(successTransform).toBeCalled();
             expect(failureTransform).not.toBeCalled();
@@ -229,16 +225,40 @@ describe('Result', () => {
             expect(retrievedValue).toBe(failureTransform(error));
         };
 
-        test('given a success result when folding then the success transformation is applied', () => {
-            const successResult = givenASuccessResult();
-            const retrievedValue = whenFolding(successResult, successTransform, failureTransform);
-            thenTheSuccessTransformationIsApplied(retrievedValue);
+        describe('fold by using individual handlers', () => {
+            const whenFolding = (result: Result<string>, onSuccess: (value: string) => string, onFailure: (error: Error) => string) => {
+                return result.fold(onSuccess, onFailure);
+            };
+
+            test('given a success result when folding then the success transformation is applied', () => {
+                const successResult = givenASuccessResult();
+                const retrievedValue = whenFolding(successResult, successTransform, failureTransform);
+                thenTheSuccessTransformationIsApplied(retrievedValue);
+            });
+
+            test('given a failure result when folding then the transformation for failure is applied', () => {
+                const successResult = givenAFailureResult();
+                const retrievedValue = whenFolding(successResult, successTransform, failureTransform);
+                thenTheFailureTransformationIsNotApplied(retrievedValue);
+            });
         });
 
-        test('given a failure result when folding then the transformation for failure is applied', () => {
-            const successResult = givenAFailureResult();
-            const retrievedValue = whenFolding(successResult, successTransform, failureTransform);
-            thenTheFailureTransformationIsNotApplied(retrievedValue);
+        describe('fold by using an object', () => {
+            const whenFolding = (result: Result<string>, transformation: { onSuccess: (value: string) => string; onFailure: (error: Error) => string }) => {
+                return result.fold(transformation);
+            };
+
+            test('given a success result when folding then the success transformation is applied', () => {
+                const successResult = givenASuccessResult();
+                const retrievedValue = whenFolding(successResult, { onSuccess: successTransform, onFailure: failureTransform });
+                thenTheSuccessTransformationIsApplied(retrievedValue);
+            });
+
+            test('given a failure result when folding then the transformation for failure is applied', () => {
+                const successResult = givenAFailureResult();
+                const retrievedValue = whenFolding(successResult, { onSuccess: successTransform, onFailure: failureTransform });
+                thenTheFailureTransformationIsNotApplied(retrievedValue);
+            });
         });
     });
 
