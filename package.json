@@ -1,6 +1,6 @@
 {
   "name": "@felipearpa/resulting",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Result type based on Kotlin Result type",
   "repository": {
     "type": "git",

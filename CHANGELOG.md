@@ -9,6 +9,27 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ---
 
+## [1.2.0] - 2025-01-06
+
+### ✨ New Features
+
+- **Added support for object parameter in the `fold` method:**
+  The `fold` method now accepts an object with `onSuccess` and `onFailure` handlers as an alternative to the traditional positional parameters. This provides more flexibility and improves code readability when handling both success and failure cases.
+  **Example:**
+
+```typescript
+const result: Result<number> = Result.success(42);
+
+const transformedResult = result.fold({
+    onSuccess: (value) => `Success! The value is ${value}`,
+    onFailure: (error) => `Failure! The error is: ${error.message}`,
+});
+
+console.log(transformedResult); // Output: Success! The value is 42
+```
+
+---
+
 ## [1.1.0] - 2024-12-15
 
 ### ✨ New Features
