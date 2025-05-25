@@ -5,6 +5,24 @@ result,
 which can either be a `Success` with a value or a `Failure` with an error, offering methods to safely operate on these results. This type is based on
 the `Kotlin` `Result` type.
 
+## Why a resulting type
+
+Handling results effectively is vital in modern software development, especially when dealing with API responses. A `Result` type provides a robust mechanism to manage success and failure scenarios in a predictable and consistent way. While it can be applied to a variety of use cases, it is particularly suited for structuring API responses. Here’s why:
+
+- **Clarity and Explicitness**: With a `Result` type, the distinction between a successful or failed API operation becomes explicit. Instead of relying on HTTP status codes or custom error-handling mechanisms, your API responses become self-explanatory—clearly defining whether they encapsulate a success or an error.
+
+- **Error Propagation Made Simple**: APIs often need to relay errors back to consumers in a detailed and structured way. The `Result` type encapsulates errors cleanly, allowing developers to propagate and handle errors consistently without introducing ad-hoc patterns.
+
+- **Type-Safe Responses**: Especially in TypeScript, a `Result` type enforces strict type safety. This ensures developers handle both the success and failure states of an API response, reducing the risk of runtime errors caused by improperly handled or unchecked error states.
+
+- **Streamlined Pattern for Operations**: By adopting a `Result` type, API responses become naturally functional and composable. Chaining operations such as mapping, transforming, or recovering from errors can be handled elegantly, allowing developers to build APIs that are both expressive and concise.
+
+- **Consistency Across Codebases**: When APIs return results using a uniform schema, your codebase's consistency improves. Maintenance becomes easier because the same interface can describe both successful results and error states, simplifying integrations between services.
+
+- **Improved Consumer Experience**: For developers consuming your APIs, handling responses structured as a `Result` type becomes straightforward. They don’t need to decipher custom formats or error codes, as the `Result` type inherently conveys all necessary information.
+
+The `Resulting` package makes it straightforward to implement this pattern in your JavaScript or TypeScript projects. By encapsulating both success values and error states within a structured abstraction, it simplifies error handling while encouraging functional programming practices. Its versatility allows it to shine not only in API responses but also in other scenarios where predictable result handling is essential.
+
 ## Installation
 
 To install the dependencies, use npm or yarn:
