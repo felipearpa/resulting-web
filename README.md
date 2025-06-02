@@ -23,6 +23,52 @@ Handling results effectively is vital in modern software development, especially
 
 The `Resulting` package makes it straightforward to implement this pattern in your JavaScript or TypeScript projects. By encapsulating both success values and error states within a structured abstraction, it simplifies error handling while encouraging functional programming practices. Its versatility allows it to shine not only in API responses but also in other scenarios where predictable result handling is essential.
 
+### Usage
+
+#### Angular
+
+```typescript
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+    private readonly apiUrl = 'https://api.example.com/users';
+
+    constructor(private http: HttpClient) {
+    }
+
+    getUser(id: number): Observable<Result<User>> {
+        return this.http.get<User>(`${this.apiUrl}/${id}`).pipe(
+            map(user => Result.success(user)),
+            catchError(error => of(Result.failure(Error(`Failed to fetch user: ${error.message}`))))
+        );
+    }
+}
+```
+
+#### Using fetch
+
+```typescript
+class UserService {
+    private readonly apiUrl = 'https://api.example.com/users';
+
+    async getUser(id: number): Promise<Result<User>> {
+        try {
+            const response = await fetch(`${this.apiUrl}/${id}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const user: User = await response.json();
+            return Result.success(user);
+        } catch (error) {
+            return Result.failure(new Error(`Failed to fetch user: ${error instanceof Error ? error.message : 'Unknown error'}`));
+        }
+    }
+}
+```
+
 ## Installation
 
 To install the dependencies, use npm or yarn:
