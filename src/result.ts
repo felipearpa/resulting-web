@@ -1,19 +1,5 @@
-class SuccessType<Value> {
-    readonly type = 'success';
-
-    constructor(public readonly value: Value) {}
-}
-
-class FailureType {
-    readonly type = 'failure';
-
-    constructor(public readonly error: Error) {}
-}
-
-type ResultType<Value> = SuccessType<Value> | FailureType;
-
 /**
- * A discriminated union that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error.
+ * A class that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error.
  */
 export class Result<Value> {
     /**
@@ -22,7 +8,7 @@ export class Result<Value> {
      * @return {boolean} True if this instance represents a successful outcome.
      */
     get isSuccess(): boolean {
-        return this.result instanceof SuccessType;
+        return this instanceof Success;
     }
 
     /**
@@ -31,21 +17,23 @@ export class Result<Value> {
      * @return {boolean} True if this instance represents a failed outcome.
      */
     get isFailure(): boolean {
-        return this.result instanceof FailureType;
+        return this instanceof Failure;
     }
 
     /**
      * Retrieves the value stored in the result.
      * If the result is a success, returns the success value.
      * If the result is a failure, returns the error.
-     * @return {unknown} The value from a successful result or the error from a failed result.
+     *
+     * @template Value
+     * @return {Value | Error} The value from a successful result or the error from a failed result.
      */
-    protected get value(): unknown {
-        if (this.isSuccess) return (this.result as SuccessType<Value>).value;
-        return (this.result as FailureType).error;
+    protected get rawValue(): unknown {
+        if (this.isSuccess) return (this as unknown as Success<Value>).value;
+        return (this as unknown as Failure<Value>).error;
     }
 
-    private constructor(private readonly result: ResultType<Value>) {}
+    protected constructor() {}
 
     /**
      * Returns an instance that encapsulates a successful value.
@@ -64,7 +52,7 @@ export class Result<Value> {
     static success<Value>(value: Value): Result<Value>;
 
     static success<Value>(value?: Value extends void ? never : Value): Result<Value> {
-        return new Result<Value>(new SuccessType(value as Value));
+        return new Success(value as Value);
     }
 
     /**
@@ -74,7 +62,9 @@ export class Result<Value> {
      * @param {Error} error - The error representing a failure outcome.
      * @returns {Result<Value>} The instance that encapsulates the given error as failure.
      */
-    static failure = <Value>(error: Error): Result<Value> => new Result<Value>(new FailureType(error));
+    static failure<Value>(error: Error): Result<Value> {
+        return new Failure(error);
+    }
 
     /**
      * Returns the encapsulated value if this instance represents success or null if it is failure.
@@ -84,7 +74,7 @@ export class Result<Value> {
      */
     getOrNull(): Value | null {
         if (this.isSuccess) {
-            return this.value as Value;
+            return this.rawValue as Value;
         }
         return null;
     }
@@ -96,8 +86,8 @@ export class Result<Value> {
      * @return {Value} The encapsulated value if this instance represents success or throws the encapsulated error if it is failure.
      */
     getOrThrow(): Value {
-        if (this.isFailure) throw this.value as Error;
-        return this.value as Value;
+        if (this.isFailure) throw this.rawValue as Error;
+        return this.rawValue as Value;
     }
 
     /**
@@ -127,7 +117,7 @@ export class Result<Value> {
     getOrElse<NewValue, Value extends NewValue>(this: Result<Value>, onFailure: (error: Error) => NewValue): NewValue {
         const error = this.errorOrNull();
         if (error == null) {
-            return this.value as Value;
+            return this.rawValue as Value;
         }
         return onFailure(error);
     }
@@ -138,7 +128,7 @@ export class Result<Value> {
      * @return {Error | null} The encapsulated error if this instance represents failure or null if it is success.
      */
     errorOrNull(): Error | null {
-        if (this.isFailure) return this.value as Error;
+        if (this.isFailure) return this.rawValue as Error;
         return null;
     }
 
@@ -153,8 +143,8 @@ export class Result<Value> {
      * or the original encapsulated error if it is failure.
      */
     map<NewValue>(transform: (value: Value) => NewValue): Result<NewValue> {
-        if (this.isSuccess) return Result.success(transform(this.value as Value));
-        return Result.failure(this.value as Error);
+        if (this.isSuccess) return Result.success(transform(this.rawValue as Value));
+        return Result.failure(this.rawValue as Error);
     }
 
     /**
@@ -197,8 +187,8 @@ export class Result<Value> {
             return this.fold(onSuccess, onFailure);
         }
 
-        if (this.isSuccess) return (handlers as (value: Value) => NewValue)((this.result as { value: Value }).value);
-        return (onFailure as (error: Error) => NewValue)((this.result as { error: Error }).error);
+        if (this.isSuccess) return (handlers as (value: Value) => NewValue)((this as unknown as Success<Value>).value);
+        return (onFailure as (error: Error) => NewValue)((this as unknown as Failure<Value>).error);
     }
 
     /**
@@ -226,7 +216,7 @@ export class Result<Value> {
      * @return {Result<Value>} The original Result unchanged.
      */
     onSuccess(action: (value: Value) => void): Result<Value> {
-        if (this.isSuccess) action(this.value as Value);
+        if (this.isSuccess) action(this.rawValue as Value);
         return this;
     }
 
@@ -238,7 +228,7 @@ export class Result<Value> {
      * @return {Result<Value>} The original Result unchanged.
      */
     onFailure(action: (error: Error) => void): Result<Value> {
-        if (this.isFailure) action(this.value as Error);
+        if (this.isFailure) action(this.rawValue as Error);
         return this;
     }
 
@@ -250,6 +240,46 @@ export class Result<Value> {
      * where x is a string representation of the error.
      */
     toString(): string {
-        return String(this.value);
+        return String(this.rawValue);
     }
 }
+
+/**
+ * A class representing a successful result.
+ *
+ * @template Value - The type of the value contained in the success result.
+ */
+class Success<Value> extends Result<Value> {
+    constructor(public readonly value: Value) {
+        super();
+    }
+}
+
+/**
+ * A class that represents a failure result.
+ *
+ * @template Value The type of the value that would have been returned in case of success.
+ */
+class Failure<Value> extends Result<Value> {
+    constructor(public readonly error: Error) {
+        super();
+    }
+}
+
+/**
+ * A type guard function that checks if the given result is an instance of the Success class.
+ *
+ * @template Value
+ * @param {Result<Value>} result - The result object to be checked.
+ * @returns {result is Success<Value>} Returns true if the result is an instance of Success, otherwise false.
+ */
+export const isSuccessResult = <Value>(result: Result<Value>): result is Success<Value> => result instanceof Success;
+
+/**
+ * A type guard function that checks whether a `Result` object is a failure instance.
+ *
+ * @template Value - The type parameter representing the value wrapped by the `Result`.
+ * @param {Result<Value>} result - The `Result` object to be checked.
+ * @returns {boolean} - Returns `true` if the given `result` is an instance of `Failure`, otherwise `false`.
+ */
+export const isFailureResult = <Value>(result: Result<Value>): result is Failure<Value> => result instanceof Failure;

@@ -9,6 +9,25 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ---
 
+## [1.3.0] - 2025-06-22
+
+### ✨ New Features
+
+- **Added type guard functions `isSuccessResult` and `isFailureResult`:**
+  These new functions allow for precise type narrowing when working with `Result` objects, enabling safer access to the underlying `value` or `error` in `Success` and `Failure` instances, respectively.
+  **Example:**
+  ```typescript
+  if (isSuccessResult(result)) {
+      console.log(result.value); // Safe to access
+  }
+
+  if (isFailureResult(result)) {
+      console.error(result.error); // Safe to access
+  }
+  ```
+
+---
+
 ## [1.2.0] - 2025-01-06
 
 ### ✨ New Features

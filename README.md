@@ -88,15 +88,21 @@ yarn install @felipearpa/resulting
 Here’s how you can use the package after installation. You can import the package and use its features like this:
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
+import { Result, isSuccessResult, isFailureResult } from '@felipearpa/resulting';
 
-const successFailure = Result.success('success result');
+const successResult = Result.success('success result');
 console.log(successResult.isSuccess); // Output: true
 console.log(successResult.isFailure); // Output: false
+if (isSuccessResult(successResult)) {
+    console.log(successResult.value); // Output: success result
+}
 
 const failureResult = Result.failure(Error('error result'));
 console.log(failureResult.isFailure); // Output: true
 console.log(failureResult.isSuccess); // Output: false
+if (isFailureResult(failureResult)) {
+    console.log(failureResult.error); // Output: error result
+}
 ```
 
 ## Running Tests
@@ -564,5 +570,35 @@ if (result.isSuccess) {
     console.log('Success:', result.getOrThrow()); // If successful, log the value
 } else {
     console.error('Failure:', result.errorOrNull()?.message); // If failure, log the error
+}
+```
+
+### isSuccessResult
+
+`const isSuccessResult = <Value>(result: Result<Value>): result is Success<Value> => result instanceof Success`
+
+A type guard function that checks if the given result is an instance of the Success class.
+
+```typescript
+import { Result, isSuccessResult } from '@felipearpa/resulting';
+
+const result = Result.success('value');
+if (isSuccessResult(result)) {
+    console.log(result.value); // Output: value
+}
+```
+
+### isFailureResult
+
+`const isFailureResult = <Value>(result: Result<Value>): result is Failure<Value> => result instanceof Failure`
+
+A type guard function that checks whether a `Result` object is a failure instance.
+
+```typescript
+import { Result, isFailureResult } from '@felipearpa/resulting';
+
+const result = Result.failure(Error('error'));
+if (isFailureResult(result)) {
+    console.log(result.error.message); // Output: error
 }
 ```

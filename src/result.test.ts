@@ -1,4 +1,4 @@
-import { Result } from './result';
+import { isFailureResult, isSuccessResult, Result } from './result';
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 describe('Result', () => {
@@ -244,19 +244,31 @@ describe('Result', () => {
         });
 
         describe('fold by using an object', () => {
-            const whenFolding = (result: Result<string>, transformation: { onSuccess: (value: string) => string; onFailure: (error: Error) => string }) => {
+            const whenFolding = (
+                result: Result<string>,
+                transformation: {
+                    onSuccess: (value: string) => string;
+                    onFailure: (error: Error) => string;
+                },
+            ) => {
                 return result.fold(transformation);
             };
 
             test('given a success result when folding then the success transformation is applied', () => {
                 const successResult = givenASuccessResult();
-                const retrievedValue = whenFolding(successResult, { onSuccess: successTransform, onFailure: failureTransform });
+                const retrievedValue = whenFolding(successResult, {
+                    onSuccess: successTransform,
+                    onFailure: failureTransform,
+                });
                 thenTheSuccessTransformationIsApplied(retrievedValue);
             });
 
             test('given a failure result when folding then the transformation for failure is applied', () => {
                 const successResult = givenAFailureResult();
-                const retrievedValue = whenFolding(successResult, { onSuccess: successTransform, onFailure: failureTransform });
+                const retrievedValue = whenFolding(successResult, {
+                    onSuccess: successTransform,
+                    onFailure: failureTransform,
+                });
                 thenTheFailureTransformationIsNotApplied(retrievedValue);
             });
         });
@@ -446,6 +458,28 @@ describe('Result', () => {
             const result = Result.success(42);
             expect(result).toBeInstanceOf(Result<number>);
             expect(result.getOrNull()).toBe(42);
+        });
+    });
+
+    describe('type guard for Result', () => {
+        test('given a success result when checking type guard then SuccessResult is retrieved', () => {
+            const result = Result.success('test-value');
+
+            if (isSuccessResult(result)) {
+                expect(result.value).toBe('test-value');
+            } else {
+                throw new Error('Expected result to be a success');
+            }
+        });
+
+        test('given a failure result when checking type guard then FailureResult is retrieved', () => {
+            const result = Result.failure(Error());
+
+            if (isFailureResult(result)) {
+                expect(result.error).toBeInstanceOf(Error);
+            } else {
+                throw new Error('Expected result to be a failure');
+            }
         });
     });
 });
