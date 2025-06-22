@@ -88,15 +88,21 @@ yarn install @felipearpa/resulting
 Here’s how you can use the package after installation. You can import the package and use its features like this:
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
+import { Result, isSuccessResult, isFailureResult } from '@felipearpa/resulting';
 
-const successFailure = Result.success('success result');
+const successResult = Result.success('success result');
 console.log(successResult.isSuccess); // Output: true
 console.log(successResult.isFailure); // Output: false
+if (isSuccessResult(successResult)) {
+    console.log(successResult.value); // Output: success result
+}
 
 const failureResult = Result.failure(Error('error result'));
 console.log(failureResult.isFailure); // Output: true
 console.log(failureResult.isSuccess); // Output: false
+if (isFailureResult(failureResult)) {
+    console.log(failureResult.error); // Output: error result
+}
 ```
 
 ## Running Tests
