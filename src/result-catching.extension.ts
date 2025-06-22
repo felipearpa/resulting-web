@@ -30,9 +30,9 @@ declare module './result' {
 
 Result.prototype.mapCatching = function (transform) {
     if (this.isSuccess) {
-        return runCatching(() => transform(this.value));
+        return runCatching(() => transform(this.rawValue));
     }
-    return Result.failure(this.value as Error);
+    return Result.failure(this.rawValue as Error);
 };
 
 Result.prototype.recoverCatching = function <NewValue extends NonNullable<unknown>, Value extends NewValue>(

@@ -566,3 +566,33 @@ if (result.isSuccess) {
     console.error('Failure:', result.errorOrNull()?.message); // If failure, log the error
 }
 ```
+
+### isSuccessResult
+
+`const isSuccessResult = <Value>(result: Result<Value>): result is Success<Value> => result instanceof Success`
+
+A type guard function that checks if the given result is an instance of the Success class.
+
+```typescript
+import { Result, isSuccessResult } from '@felipearpa/resulting';
+
+const result = Result.success('value');
+if (isSuccessResult(result)) {
+    console.log(result.value); // Output: value
+}
+```
+
+### isFailureResult
+
+`const isFailureResult = <Value>(result: Result<Value>): result is Failure<Value> => result instanceof Failure`
+
+A type guard function that checks whether a `Result` object is a failure instance.
+
+```typescript
+import { Result, isFailureResult } from '@felipearpa/resulting';
+
+const result = Result.failure(Error('error'));
+if (isFailureResult(result)) {
+    console.log(result.error.message); // Output: error
+}
+```
