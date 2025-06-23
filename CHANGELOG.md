@@ -11,7 +11,6 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ## [1.3.0] - 2025-06-23
 
-
 ### ✨ New Features
 
 - **Added `mapError` method to `Result`:**
