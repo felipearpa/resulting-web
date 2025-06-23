@@ -171,7 +171,7 @@ export class Result<Value, ErrorValue = Error> {
      * @template Value
      * @template ErrorValue
      * @template NewErrorValue
-     * @param {function(ErrorValue): NewErrorValue} transform - A function that takes a value of type ErrorValue and returns a new value of type NewErrorValue.
+     * @param {(ErrorValue) => NewErrorValue} transform - A function that takes a value of type ErrorValue and returns a new value of type NewErrorValue.
      * @return {Result<Value, NewErrorValue>} The encapsulated result of the given transform function applied to the encapsulated value if this instance represents failure
      * or the original encapsulated value if it is success.
      */
@@ -237,11 +237,10 @@ export class Result<Value, ErrorValue = Error> {
      * failure or the original encapsulated value if it is success.
      */
     recover<NewValue, Value extends NewValue>(this: Result<Value, ErrorValue>, transform: (error: ErrorValue) => NewValue): Result<NewValue, ErrorValue> {
-        const error = this.errorOrNull();
-        if (error == null) {
+        if (this.isSuccess) {
             return this;
         }
-        return Result.success(transform(error));
+        return Result.success(transform(this.rawValue as ErrorValue));
     }
 
     /**

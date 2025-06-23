@@ -13,7 +13,7 @@ declare module './result' {
          * @return {Result<NewValue, Error>} The encapsulated result of the given transform function applied to the encapsulated value if this instance represents
          * success or the original encapsulated error if it is failure.
          */
-        mapCatching<NewValue extends NonNullable<unknown>>(transform: (value: Value) => NewValue): Result<NewValue, Error>;
+        mapCatching<NewValue>(transform: (value: Value) => NewValue): Result<NewValue, Error>;
 
         /**
          * Returns the encapsulated result of the given transform function applied to the encapsulated error if this instance represents failure or the original
@@ -24,7 +24,7 @@ declare module './result' {
          * @return {Result<NewValue, Error>} The encapsulated result of the given transform function applied to the encapsulated error if this instance represents
          * failure or the original encapsulated value if it is success.
          */
-        recoverCatching<NewValue extends NonNullable<unknown>>(transform: (error: Error) => NewValue): Result<NewValue, Error>;
+        recoverCatching<NewValue>(transform: (error: Error) => NewValue): Result<NewValue, Error>;
     }
 }
 
@@ -35,11 +35,7 @@ Result.prototype.mapCatching = function (transform) {
     return Result.failure(this.rawValue as Error);
 };
 
-Result.prototype.recoverCatching = function <NewValue extends NonNullable<unknown>, Value extends NewValue>(
-    this: Result<Value, Error>,
-    transform: (error: Error) => NewValue,
-) {
-    const error = this.errorOrNull();
-    if (error == null) return this;
-    return runCatching(() => transform(error));
+Result.prototype.recoverCatching = function <NewValue, Value extends NewValue>(this: Result<Value, Error>, transform: (error: Error) => NewValue) {
+    if (this.isSuccess) return this;
+    return runCatching(() => transform(this.rawValue as Error));
 };
