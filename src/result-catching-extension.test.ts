@@ -11,10 +11,10 @@ describe('Result catching extension', () => {
     const successTransform = jest.fn<(value: string) => string>().mockImplementation((value: string) => `transformed (${value})`);
     const failureTransform = jest.fn<(error: Error) => string>().mockImplementation((error: Error) => `transformed (${error})`);
 
-    const givenASuccessResult = () => Result.success(successValue);
-    const givenAFailureResult = (): Result<string> => Result.failure(error);
+    const givenASuccessResult = () => Result.success<string, Error>(successValue);
+    const givenAFailureResult = (): Result<string, Error> => Result.failure(error);
 
-    const thenTheSameInstanceIsRetrieved = (retrievedResult: Result<string>, result: Result<string>) => {
+    const thenTheSameInstanceIsRetrieved = (retrievedResult: Result<string, Error>, result: Result<string, Error>) => {
         expect(retrievedResult).toBe(result);
     };
 
@@ -29,25 +29,25 @@ describe('Result catching extension', () => {
             throw error;
         });
 
-        const whenApplyingATransformation = (result: Result<string>, transform: (value: string) => string) => {
+        const whenApplyingATransformation = (result: Result<string, Error>, transform: (value: string) => string) => {
             return result.mapCatching(transform);
         };
 
-        const thenTheResultIsTransformed = (retrievedResult: Result<string>) => {
+        const thenTheResultIsTransformed = (retrievedResult: Result<string, Error>) => {
             const retrievedValue = retrievedResult.getOrNull();
             expect(retrievedValue).not.toBeNull();
             expect(retrievedValue).toBe(safeSuccessTransform(successValue));
             expect(safeSuccessTransform).toBeCalled();
         };
 
-        const thenTheResultIsTransformedCatchingAnyError = (retrievedResult: Result<string>) => {
+        const thenTheResultIsTransformedCatchingAnyError = (retrievedResult: Result<string, Error>) => {
             const retrievedError = retrievedResult.errorOrNull();
             expect(retrievedError).not.toBeNull();
             expect(retrievedError).toBe(error);
             expect(unsafeSuccessTransform).toBeCalled();
         };
 
-        const thenTheResultIsNotTransformed = (retrievedResult: Result<string>) => {
+        const thenTheResultIsNotTransformed = (retrievedResult: Result<string, Error>) => {
             const retrievedError = retrievedResult.errorOrNull();
             expect(retrievedError).not.toBeNull();
             expect(retrievedError).toBe(error);
@@ -80,17 +80,17 @@ describe('Result catching extension', () => {
             throw error;
         });
 
-        const whenRecoveringFromAnError = (result: Result<string>, transform: (error: Error) => string) => {
+        const whenRecoveringFromAnError = (result: Result<string, Error>, transform: (error: Error) => string) => {
             return result.recoverCatching(transform);
         };
 
-        const thenTheFailureIsTransformed = (retrievedResult: Result<string>) => {
+        const thenTheFailureIsTransformed = (retrievedResult: Result<string, Error>) => {
             expect(safeFailureTransform).toBeCalled();
             expect(retrievedResult.isSuccess).toBeTruthy();
             expect(retrievedResult.getOrNull()).toBe(safeFailureTransform(error));
         };
 
-        const thenTheFailureIsTransformedCatchingAnyError = (retrievedResult: Result<string>) => {
+        const thenTheFailureIsTransformedCatchingAnyError = (retrievedResult: Result<string, Error>) => {
             expect(unsafeFailureTransform).toBeCalled();
             expect(retrievedResult.isFailure).toBeTruthy();
             expect(retrievedResult.errorOrNull()).toBe(error);
