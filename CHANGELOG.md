@@ -13,6 +13,13 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ### ✨ New Features
 
+- **Enabled generic error type in `Result<Value, ErrorValue>`:**
+  The `Result` class now accepts a second generic parameter to define the error type explicitly. This allows users to model domain-specific errors (like strings or custom types) while maintaining backward compatibility with the default `Error` type.
+  **Example:**
+  ```typescript
+  const result: Result<number, string> = Result.failure('Invalid input');
+  ```
+
 - **Added type guard functions `isSuccessResult` and `isFailureResult`:**
   These new functions allow for precise type narrowing when working with `Result` objects, enabling safer access to the underlying `value` or `error` in `Success` and `Failure` instances, respectively.
   **Example:**

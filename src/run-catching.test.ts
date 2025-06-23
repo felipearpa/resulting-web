@@ -23,7 +23,7 @@ describe('run-catching', () => {
         return runCatching(action);
     };
 
-    const thenASuccessResultIsRetrieved = (retrievedResult: Result<string>, action: jest.Mock<() => string>) => {
+    const thenASuccessResultIsRetrieved = (retrievedResult: Result<string, Error>, action: jest.Mock<() => string>) => {
         expect(action).toBeCalled();
 
         expect(retrievedResult.isSuccess).toBeTruthy();
@@ -33,7 +33,7 @@ describe('run-catching', () => {
         expect(retrievedValue).toBe(action());
     };
 
-    const thenAFailureResultIsRetrieved = (retrievedResult: Result<string>, action: jest.Mock<() => string>) => {
+    const thenAFailureResultIsRetrieved = (retrievedResult: Result<string, Error>, action: jest.Mock<() => string>) => {
         expect(action).toBeCalled();
 
         expect(retrievedResult.isFailure).toBeTruthy();

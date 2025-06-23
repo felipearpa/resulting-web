@@ -1,4 +1,4 @@
-import {Result} from './result';
+import { Result } from './result';
 
 /**
  * Calls the specified function block and returns its encapsulated result if invocation was successful, catching any error that was thrown from the block
@@ -9,7 +9,7 @@ import {Result} from './result';
  * @returns {Result<Value>} The encapsulated result if invocation was successful, catching any error that was thrown from the block function execution and
  * encapsulating it as a failure.
  */
-export const runCatching = <Value extends NonNullable<unknown>>(block: () => Value): Result<Value> => {
+export const runCatching = <Value extends NonNullable<unknown>>(block: () => Value): Result<Value, Error> => {
     try {
         return Result.success(block());
     } catch (error) {

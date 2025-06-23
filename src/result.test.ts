@@ -13,9 +13,9 @@ describe('Result', () => {
 
     const failureTransform = jest.fn<(error: Error) => string>().mockImplementation((error) => `transformed (${error})`);
 
-    const givenASuccessResult = () => Result.success(successValue);
+    const givenASuccessResult = () => Result.success<string, Error>(successValue);
 
-    const givenAFailureResult = (): Result<string> => Result.failure(error);
+    const givenAFailureResult = (): Result<string, Error> => Result.failure(error);
 
     const thenValueIsRetrieved = (retrievedValue: string | null) => {
         expect(retrievedValue).toBe(successValue);
@@ -29,11 +29,11 @@ describe('Result', () => {
         expect(retrievedValue).toBe(error);
     };
 
-    const thenTheSameInstanceIsRetrieved = (retrievedResult: Result<string>, result: Result<string>) => {
+    const thenTheSameInstanceIsRetrieved = (retrievedResult: Result<string, Error>, result: Result<string, Error>) => {
         expect(retrievedResult).toBe(result);
     };
 
-    const thenAnotherInstanceIsRetrieved = (retrievedResult: Result<string>, result: Result<string>) => {
+    const thenAnotherInstanceIsRetrieved = (retrievedResult: Result<string, Error>, result: Result<string, Error>) => {
         expect(retrievedResult).not.toBe(result);
     };
 
@@ -74,7 +74,7 @@ describe('Result', () => {
     });
 
     describe('getOrNull', () => {
-        const whenRetrievingTheValue = (result: Result<string>) => {
+        const whenRetrievingTheValue = (result: Result<string, Error>) => {
             return result.getOrNull();
         };
 
@@ -92,7 +92,7 @@ describe('Result', () => {
     });
 
     describe('getOrElse', () => {
-        const whenRetrievingTheValueWithFallback = (result: Result<string>, onFailure: (error: Error) => string) => {
+        const whenRetrievingTheValueWithFallback = (result: Result<string, Error>, onFailure: (error: Error) => string) => {
             return result.getOrElse(onFailure);
         };
 
@@ -116,7 +116,7 @@ describe('Result', () => {
     });
 
     describe('getOrDefault', () => {
-        const whenRetrievingTheValueWithDefault = (result: Result<string>, defaultValue: string) => {
+        const whenRetrievingTheValueWithDefault = (result: Result<string, Error>, defaultValue: string) => {
             return result.getOrDefault(defaultValue);
         };
 
@@ -138,7 +138,7 @@ describe('Result', () => {
     });
 
     describe('getOrThrow', () => {
-        const whenRetrievingTheValueSafely = (result: Result<string>) => {
+        const whenRetrievingTheValueSafely = (result: Result<string, Error>) => {
             return result.getOrThrow();
         };
 
@@ -164,7 +164,7 @@ describe('Result', () => {
     });
 
     describe('errorOrNull', () => {
-        const whenRetrievingTheError = (result: Result<string>) => {
+        const whenRetrievingTheError = (result: Result<string, Error>) => {
             return result.errorOrNull();
         };
 
@@ -182,17 +182,17 @@ describe('Result', () => {
     });
 
     describe('map', () => {
-        const whenApplyingATransformation = (result: Result<string>, transform: (value: string) => string) => {
+        const whenApplyingATransformation = (result: Result<string, Error>, transform: (value: string) => string) => {
             return result.map(transform);
         };
 
-        const thenTheResultIsTransformed = (retrievedResult: Result<string>) => {
+        const thenTheResultIsTransformed = (retrievedResult: Result<string, Error>) => {
             thenTheTransformationIsApplied(successTransform);
             expect(retrievedResult.isSuccess).toBeTruthy();
             expect(retrievedResult.getOrNull()).toBe(successTransform(successValue));
         };
 
-        const thenTheResultIsNotTransformed = (retrievedResult: Result<string>) => {
+        const thenTheResultIsNotTransformed = (retrievedResult: Result<string, Error>) => {
             thenTheTransformationIsNotApplied(successTransform);
             expect(retrievedResult.isFailure).toBeTruthy();
             expect(retrievedResult.errorOrNull()).toBe(error);
@@ -226,7 +226,7 @@ describe('Result', () => {
         };
 
         describe('fold by using individual handlers', () => {
-            const whenFolding = (result: Result<string>, onSuccess: (value: string) => string, onFailure: (error: Error) => string) => {
+            const whenFolding = (result: Result<string, Error>, onSuccess: (value: string) => string, onFailure: (error: Error) => string) => {
                 return result.fold(onSuccess, onFailure);
             };
 
@@ -245,7 +245,7 @@ describe('Result', () => {
 
         describe('fold by using an object', () => {
             const whenFolding = (
-                result: Result<string>,
+                result: Result<string, Error>,
                 transformation: {
                     onSuccess: (value: string) => string;
                     onFailure: (error: Error) => string;
@@ -275,11 +275,11 @@ describe('Result', () => {
     });
 
     describe('recover', () => {
-        const whenRecovering = (result: Result<string>, onFailure: (error: Error) => string) => {
+        const whenRecovering = (result: Result<string, Error>, onFailure: (error: Error) => string) => {
             return result.recover(onFailure);
         };
 
-        const thenTheFailureTransformationIsApplied = (retrievedResult: Result<string>) => {
+        const thenTheFailureTransformationIsApplied = (retrievedResult: Result<string, Error>) => {
             expect(retrievedResult.isSuccess).toBeTruthy();
             expect(failureTransform).toBeCalled();
         };
@@ -298,7 +298,7 @@ describe('Result', () => {
     });
 
     describe('onSuccess', () => {
-        const whenHandlingSuccess = (result: Result<string>, onSuccess: (value: string) => void) => {
+        const whenHandlingSuccess = (result: Result<string, Error>, onSuccess: (value: string) => void) => {
             return result.onSuccess(onSuccess);
         };
 
@@ -332,7 +332,7 @@ describe('Result', () => {
     });
 
     describe('onFailure', () => {
-        const whenHandlingFailure = (result: Result<string>, onFailure: (error: Error) => void) => {
+        const whenHandlingFailure = (result: Result<string, Error>, onFailure: (error: Error) => void) => {
             return result.onFailure(onFailure);
         };
 
@@ -366,7 +366,7 @@ describe('Result', () => {
     });
 
     describe('toString', () => {
-        const whenConvertingToString = (result: Result<string>) => {
+        const whenConvertingToString = (result: Result<string, Error>) => {
             return result.toString();
         };
 
@@ -391,9 +391,9 @@ describe('Result', () => {
         });
     });
 
-    describe('Result<void>', () => {
+    describe('Result with void success and Error failure', () => {
         const voidSuccessResult = Result.success();
-        const voidFailureResult = Result.failure<void>(error);
+        const voidFailureResult = Result.failure<void, Error>(error);
 
         test('given a void success result when retrieving the value safely then the value is retrieved', () => {
             const unsafeWhenGetOrThrowIsExecuted = () => {
@@ -414,50 +414,188 @@ describe('Result', () => {
 
     describe('Result.success type safety', () => {
         test('given an implicit void success result when instantiated without annotation then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
             const result = Result.success();
-            expect(result).toBeInstanceOf(Result<void>);
+
+            const typed: Result<void, Error> = result;
+            expect(typed).toBeDefined();
         });
 
         test('given an explicit void success result when instantiated without annotation then is allowed', () => {
-            const result: Result<void> = Result.success();
-            expect(result).toBeInstanceOf(Result<void>);
+            const result: Result<void, Error> = Result.success();
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, Error> = result;
+
+            expect(typed).toBeDefined();
         });
 
         test('given an implicit void success result when instantiated with annotation then is allowed', () => {
-            const result = Result.success<void>();
-            expect(result).toBeInstanceOf(Result<void>);
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.success<void, Error>();
+
+            const typed: Result<void, Error> = result;
+            expect(typed).toBeDefined();
         });
 
         test('given an explicit void success result when instantiated with annotation then is allowed', () => {
-            const result: Result<void> = Result.success<void>();
-            expect(result).toBeInstanceOf(Result<void>);
+            const result: Result<void, Error> = Result.success<void, Error>();
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, Error> = result;
+
+            expect(typed).toBeDefined();
         });
 
         test('given an implicit void success result when is instanced with annotation and undefined as parameter then is allowed', () => {
-            const result = Result.success<void>(undefined);
-            expect(result).toBeInstanceOf(Result<void>);
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.success<void, Error>(undefined);
+
+            const typed: Result<void, Error> = result;
+            expect(typed).toBeDefined();
         });
 
         test('given an explicit void success result when is instanced with annotation and undefined as parameter then is allowed', () => {
-            const result: Result<void> = Result.success<void>(undefined);
-            expect(result).toBeInstanceOf(Result<void>);
+            const result: Result<void, Error> = Result.success<void, Error>(undefined);
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, Error> = result;
+
+            expect(typed).toBeDefined();
         });
 
         test('given an undefined success result when is instanced then is allowed', () => {
-            const result = Result.success<undefined>();
-            expect(result).toBeInstanceOf(Result<undefined>);
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.success<undefined, Error>();
+
+            const typed: Result<undefined, Error> = result;
+            expect(typed).toBeDefined();
         });
 
         test('given a string success result when is instanced then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
             const result = Result.success('hello');
-            expect(result).toBeInstanceOf(Result<string>);
-            expect(result.getOrNull()).toBe('hello');
+
+            const typed: Result<string, Error> = result;
+            expect(typed).toBeDefined();
         });
 
         test('given a number success result when is instanced then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
             const result = Result.success(42);
-            expect(result).toBeInstanceOf(Result<number>);
-            expect(result.getOrNull()).toBe(42);
+
+            const typed: Result<number, Error> = result;
+            expect(typed).toBeDefined();
+        });
+    });
+
+    describe('Result.failure type safety', () => {
+        test('given an implicit void failure result when instantiated without annotation then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure();
+
+            const typed: Result<void, void> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given an explicit void failure result when instantiated without annotation then is allowed', () => {
+            const result: Result<void, void> = Result.failure();
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, void> = result;
+
+            expect(typed).toBeDefined();
+        });
+
+        test('given an implicit void failure result when instantiated with annotation then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure<void, void>();
+
+            const typed: Result<void, void> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given an explicit void failure result when instantiated with annotation then is allowed', () => {
+            const result: Result<void, void> = Result.failure<void, void>();
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, void> = result;
+
+            expect(typed).toBeDefined();
+        });
+
+        test('given an implicit void failure result when is instanced with annotation and undefined as parameter then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure<void, void>(undefined);
+
+            const typed: Result<void, void> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given an explicit void failure result when is instanced with annotation and undefined as parameter then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result: Result<void, void> = Result.failure<void, void>(undefined);
+
+            // noinspection UnnecessaryLocalVariableJS
+            const typed: Result<void, void> = result;
+
+            expect(typed).toBeDefined();
+        });
+
+        test('given an undefined failure result when is instanced then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure<void, undefined>();
+
+            const typed: Result<void, undefined> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given a string failure result when is instanced then is allowed', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure('hello');
+
+            const typed: Result<void, string> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given a number failure result when is instanced then is allowed', () => {
+            const result = Result.failure(42);
+            expect(result).toBeInstanceOf(Result<number, Error>);
+            expect(result.errorOrNull()).toBe(42);
+        });
+    });
+
+    describe('Result.success without error type', () => {
+        test('given success result without error type when instantiated without annotation then the error type is Error', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.success('value');
+
+            const typed: Result<string, Error> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given success void result without error type when instantiated with annotation then the error type is Error', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.success();
+
+            const typed: Result<void, Error> = result;
+            expect(typed).not.toBeUndefined();
+        });
+    });
+
+    describe('Result.failure without value type', () => {
+        test('given failure result without value type when instantiated without annotation then the value type is void', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure('error');
+            const typed: Result<void, string> = result;
+            expect(typed).toBeDefined();
+        });
+
+        test('given failure void result without value type when instantiated without annotation then the value type is void', () => {
+            // noinspection UnnecessaryLocalVariableJS
+            const result = Result.failure();
+            const typed: Result<void, void> = result;
+            expect(typed).toBeDefined();
         });
     });
 
