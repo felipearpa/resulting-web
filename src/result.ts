@@ -165,6 +165,22 @@ export class Result<Value, ErrorValue = Error> {
     }
 
     /**
+     * Returns the encapsulated result of the given transform function applied to the encapsulated value if this instance represents failure or the original
+     * encapsulated value if it is success.
+     *
+     * @template Value
+     * @template ErrorValue
+     * @template NewErrorValue
+     * @param {function(ErrorValue): NewErrorValue} transform - A function that takes a value of type ErrorValue and returns a new value of type NewErrorValue.
+     * @return {Result<Value, NewErrorValue>} The encapsulated result of the given transform function applied to the encapsulated value if this instance represents failure
+     * or the original encapsulated value if it is success.
+     */
+    mapError<NewErrorValue>(transform: (error: ErrorValue) => NewErrorValue): Result<Value, NewErrorValue> {
+        if (this.isFailure) return Result.failure(transform(this.rawValue as ErrorValue));
+        return Result.success(this.rawValue as Value);
+    }
+
+    /**
      * Returns the result of onSuccess for the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated
      * error if it is failure.
      *

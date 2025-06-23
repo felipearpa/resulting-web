@@ -11,7 +11,17 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ## [1.3.0] - 2025-06-22
 
+
 ### ✨ New Features
+
+- **Added `mapError` method to `Result`:**
+  This method allows transforming the error value of a `Result` without affecting the success value. It's useful for adapting or refining the error before further handling.
+  **Example:**
+  ```typescript
+  const result: Result<number, Error> = Result.failure(Error('Invalid'));
+  const refined = result.mapError(error => `Refined: ${error.message}`);
+  // Result<number, string> with error = "Refined: Invalid"
+  ```
 
 - **Enabled generic error type in `Result<Value, ErrorValue>`:**
   The `Result` class now accepts a second generic parameter to define the error type explicitly. This allows users to model domain-specific errors (like strings or custom types) while maintaining backward compatibility with the default `Error` type.
