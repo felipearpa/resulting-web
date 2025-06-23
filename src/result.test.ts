@@ -212,6 +212,36 @@ describe('Result', () => {
         });
     });
 
+    describe('mapError', () => {
+        const whenApplyingATransformation = (result: Result<string, Error>, transform: (error: Error) => string) => {
+            return result.mapError(transform);
+        };
+
+        const thenTheResultIsTransformed = (retrievedResult: Result<string, string>) => {
+            thenTheTransformationIsApplied(failureTransform);
+            expect(retrievedResult.isFailure).toBeTruthy();
+            expect(retrievedResult.errorOrNull()).toBe(failureTransform(error));
+        };
+
+        const thenTheResultIsNotTransformed = (retrievedResult: Result<string, string>) => {
+            thenTheTransformationIsNotApplied(failureTransform);
+            expect(retrievedResult.isSuccess).toBeTruthy();
+            expect(retrievedResult.getOrNull()).toBe(successValue);
+        };
+
+        test('given a failure result when applying a transformation then the result is transformed', () => {
+            const failureResult = givenAFailureResult();
+            const retrievedResult = whenApplyingATransformation(failureResult, failureTransform);
+            thenTheResultIsTransformed(retrievedResult);
+        });
+
+        test('given a success result when applying a transformation then the result is not transformed', () => {
+            const successResult = givenASuccessResult();
+            const retrievedResult = whenApplyingATransformation(successResult, failureTransform);
+            thenTheResultIsNotTransformed(retrievedResult);
+        });
+    });
+
     describe('fold', () => {
         const thenTheSuccessTransformationIsApplied = (retrievedValue: string) => {
             expect(successTransform).toBeCalled();

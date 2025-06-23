@@ -143,8 +143,6 @@ A discriminated union that encapsulates a successful outcome with a value of typ
 Returns an instance that encapsulates the given value as successful value.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.success('action succeeded');
 ```
 
@@ -155,8 +153,6 @@ const result = Result.success('action succeeded');
 Returns an instance that encapsulates the given error as failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 ```
 
@@ -167,8 +163,6 @@ const result: Result<string> = Result.failure(Error('action failed'));
 Returns true if this instance represents a successful outcome. In this case isFailure returns false.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.success('action succeeded');
 
 if (result.isSuccess) {
@@ -185,8 +179,6 @@ if (result.isSuccess) {
 Returns true if this instance represents a failed outcome. In this case isSuccess returns false.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 
 if (result.isSuccess) {
@@ -203,8 +195,6 @@ if (result.isSuccess) {
 Returns the encapsulated value if this instance represents success or null if it is failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.success('action succeeded');
 
 const valueOrNull = result.getOrNull();
@@ -223,8 +213,6 @@ if (valueOrNull !== null) {
 Returns the encapsulated value if this instance represents success or throws the encapsulated error if it is failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.success('action succeeded');
 
 try {
@@ -236,8 +224,6 @@ try {
 ```
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.failure('action failed');
 
 try {
@@ -255,8 +241,6 @@ try {
 Returns the encapsulated value if this instance represents success or the defaultValue if it is failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 
 const value = result.getOrDefault('default value');
@@ -271,8 +255,6 @@ console.log('Result: ', value); // Output: default value
 Returns the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated Error if it is failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 
 const value = result.getOrElse((error) => {
@@ -290,8 +272,6 @@ console.log('Result: ', value); // Output: fallback value
 Returns the encapsulated error if this instance represents failure or null if it is success.
 
 ```typescript
-import { Result } from '@felipearpa/reesult';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 
 const error = result.errorOrNull();
@@ -308,8 +288,6 @@ if (error !== null) {
 `map<NewValue>(transform: (value: Value) => NewValue): Result<NewValue>`
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.success(10);
 
 const transformedResult = result.map(value => value * 2);
@@ -318,6 +296,22 @@ if (transformedResult.isSuccess) {
     console.log('transformed value: ', transformedResult.getOrThrow()); // Output: transformed value: 20
 } else {
     console.error('action failed');
+}
+```
+
+- #### mapError
+
+`mapError<NewErrorValue>(transform: (error: ErrorValue) => NewErrorValue): Result<Value, NewErrorValue>`
+
+Returns a new `Result` with the same success value if this instance is successful, or with the error transformed by the provided function if it is a failure.
+
+```typescript
+const result: Result<number, Error> = Result.failure(Error('original error'));
+
+const mappedResult = result.mapError(error => `Mapped: ${error.message}`);
+
+if (mappedResult.isFailure) {
+    console.error(mappedResult.errorOrNull()); // Output: Mapped: original error
 }
 ```
 
@@ -331,8 +325,6 @@ Returns the result of onSuccess for the encapsulated value if this instance repr
 if it is failure.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.success(42);
 
 const transformedResult = result.fold(
@@ -344,8 +336,6 @@ console.log(transformedResult); // Output: Success! The value is: 42
 ```
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.success(42);
 
 const transformedResult = result.fold({
@@ -357,8 +347,6 @@ console.log(transformedResult); // Output: Success! The value is: 42
 ```
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.failure(Error('action failed'));
 
 const transformedResult = result.fold(
@@ -370,8 +358,6 @@ console.log(transformedResult); // Output: Failure! The error is: action failed
 ```
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.failure(Error('action failed'));
 
 const transformedResult = result.fold({
@@ -390,8 +376,6 @@ Returns the encapsulated result of the given transform function applied to the e
 encapsulated value if it is success.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.failure(Error('action failed'));
 
 const recoveredResult = result.recover(error => {
@@ -413,8 +397,6 @@ if (recoveredResult.isSuccess) {
 Performs the given action on the encapsulated value if this instance represents success. Returns the original Result unchanged.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result = Result.success('action succeeded');
 
 result.onSuccess(value => {
@@ -429,8 +411,6 @@ result.onSuccess(value => {
 Performs the given action on the encapsulated Throwable exception if this instance represents failure. Returns the original Result unchanged.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const result: Result<string> = Result.failure(Error('action failed'));
 
 result.onFailure(error => {
@@ -446,8 +426,6 @@ Returns a string Success(v) if this instance represents success where v is a str
 is a string representation of the error.
 
 ```typescript
-import { Result } from '@felipearpa/resulting';
-
 const successResult = Result.success('action succeeded');
 const failureResult: Result<string> = Result.failure(Error('action failed'));
 
@@ -463,8 +441,6 @@ Returns the encapsulated result of the given transform function applied to the e
 encapsulated error if it is failure.
 
 ```typescript
-import { Result, runCatching } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.success(10);
 
 const transformedResult = result.mapCatching(value => {
@@ -482,8 +458,6 @@ if (transformedResult.isSuccess) {
 ```
 
 ```typescript
-import { Result, runCatching } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.success(-10);
 
 const transformedResult = result.mapCatching(value => {
@@ -508,8 +482,6 @@ Returns the encapsulated result of the given transform function applied to the e
 encapsulated value if it is success.
 
 ```typescript
-import { Result, runCatching } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.failure(new Error('initial failure'));
 
 const recoveredResult = result.recoverCatching(error => {
@@ -527,8 +499,6 @@ if (recoveredResult.isSuccess) {
 ```
 
 ```typescript
-import { Result, runCatching } from '@felipearpa/resulting';
-
 const result: Result<number> = Result.failure(new Error('final failure'));
 
 const recoveredResult = result.recoverCatching(error => {
@@ -555,8 +525,6 @@ Calls the specified function block and returns its encapsulated result if invoca
 execution and encapsulating it as a failure.
 
 ```typescript
-import { Result, runCatching } from '@felipearpa/resulting';
-
 function riskyOperation(): string {
     if (Math.random() > 0.5) {
         throw Error('something went wrong');
@@ -580,8 +548,6 @@ if (result.isSuccess) {
 A type guard function that checks if the given result is an instance of the Success class.
 
 ```typescript
-import { Result, isSuccessResult } from '@felipearpa/resulting';
-
 const result = Result.success('value');
 if (isSuccessResult(result)) {
     console.log(result.value); // Output: value
@@ -595,8 +561,6 @@ if (isSuccessResult(result)) {
 A type guard function that checks whether a `Result` object is a failure instance.
 
 ```typescript
-import { Result, isFailureResult } from '@felipearpa/resulting';
-
 const result = Result.failure(Error('error'));
 if (isFailureResult(result)) {
     console.log(result.error.message); // Output: error
