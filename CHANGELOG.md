@@ -9,7 +9,7 @@ This changelog documents all releases and notable changes. Use this to understan
 
 ---
 
-## [1.3.0] - 2025-06-22
+## [1.3.0] - 2025-06-23
 
 
 ### ✨ New Features
@@ -43,6 +43,14 @@ This changelog documents all releases and notable changes. Use this to understan
   }
   ```
 
+### 🐞 Bug Fixes
+
+- **Relaxed generic constraint for transformation types:**
+  Fixed overly strict generic constraints such as `NewValue extends NonNullable<unknown>` which unnecessarily restricted valid types like `null` or `undefined`. The constraint has been removed to allow broader usage in `map`, `mapCatching`, and related transformation methods.
+
+- **Fixed internal usage of `errorOrNull()` for state detection:**
+  Previously, some internal methods used `errorOrNull()` to determine whether a `Result` represented failure or success, which could lead to incorrect behavior when the success `Value` was `null`. These usages have been replaced with `isSuccess` and `isFailure` checks to ensure accurate and type-safe result evaluation.
+
 ---
 
 ## [1.2.0] - 2025-01-06
@@ -74,8 +82,8 @@ console.log(transformedResult); // Output: Success! The value is 42
 #### Example
 
 ```typescript
-const result = Result.success(); // ✅ Represents a success with no value.
-const voidResult = Result.success<void>(); // ✅ Explicitly denotes a success with void type.
+const result = Result.success(); // Represents a success with no value.
+const voidResult = Result.success<void>(); // Explicitly denotes a success with void type.
 ```
 
 #### Notes
