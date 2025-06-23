@@ -37,7 +37,7 @@ export class UserService {
     constructor(private http: HttpClient) {
     }
 
-    getUser(id: number): Observable<Result<User>> {
+    getUser(id: number): Observable<Result<User, Error>> {
         return this.http.get<User>(`${this.apiUrl}/${id}`).pipe(
             map(user => Result.success(user)),
             catchError(error => of(Result.failure(Error(`Failed to fetch user: ${error.message}`))))
@@ -52,7 +52,7 @@ export class UserService {
 class UserService {
     private readonly apiUrl = 'https://api.example.com/users';
 
-    async getUser(id: number): Promise<Result<User>> {
+    async getUser(id: number): Promise<Result<User, Error>> {
         try {
             const response = await fetch(`${this.apiUrl}/${id}`);
 
@@ -132,13 +132,13 @@ details!.
 
 ### Result class
 
-`Result<Value>`
+`Result<Value, ErrorValue = Error>`
 
-A discriminated union that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error.
+A discriminated union that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error of type ErrorValue.
 
 - #### success
 
-`static success(value: Value)`
+`static success<Value, ErrorValue = Error>(value: Value): Result<Value, ErrorValue>`
 
 Returns an instance that encapsulates the given value as successful value.
 
@@ -148,12 +148,12 @@ const result = Result.success('action succeeded');
 
 - #### failure
 
-`static failure(error: Error)`
+`static failure<Value, ErrorValue = Error>(error: ErrorValue): Result<Value, ErrorValue>`
 
 Returns an instance that encapsulates the given error as failure.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 ```
 
 - #### isSuccess
@@ -163,7 +163,7 @@ const result: Result<string> = Result.failure(Error('action failed'));
 Returns true if this instance represents a successful outcome. In this case isFailure returns false.
 
 ```typescript
-const result = Result.success('action succeeded');
+const result: Result<string, Error> = Result.success('action succeeded');
 
 if (result.isSuccess) {
     console.log('action succeeded with value: ', result.getOrNull()); // Output: action succeeded with value: action succeeded
@@ -179,7 +179,7 @@ if (result.isSuccess) {
 Returns true if this instance represents a failed outcome. In this case isSuccess returns false.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 
 if (result.isSuccess) {
     console.log('action succeeded with value: ', result.getOrNull());
@@ -241,7 +241,7 @@ try {
 Returns the encapsulated value if this instance represents success or the defaultValue if it is failure.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 
 const value = result.getOrDefault('default value');
 
@@ -250,12 +250,12 @@ console.log('Result: ', value); // Output: default value
 
 - #### getOrElse
 
-`getOrElse<NewValue, Value extends NewValue>(this: Result<Value>, onFailure: (error: Error) => NewValue): NewValue`
+`getOrElse<NewValue, Value extends NewValue>(this: Result<Value, ErrorValue>, onFailure: (error: ErrorValue) => NewValue): NewValue`
 
 Returns the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated Error if it is failure.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 
 const value = result.getOrElse((error) => {
     console.error('error occurred: ', error.message);
@@ -267,12 +267,12 @@ console.log('Result: ', value); // Output: fallback value
 
 - #### errorOrNull
 
-`errorOrNull(): Error | null`
+`errorOrNull(): ErrorValue | null`
 
 Returns the encapsulated error if this instance represents failure or null if it is success.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 
 const error = result.errorOrNull();
 
@@ -285,10 +285,10 @@ if (error !== null) {
 
 - #### map
 
-`map<NewValue>(transform: (value: Value) => NewValue): Result<NewValue>`
+`map<NewValue>(transform: (value: Value) => NewValue): Result<NewValue, ErrorValue>`
 
 ```typescript
-const result: Result<number> = Result.success(10);
+const result: Result<number, Error> = Result.success(10);
 
 const transformedResult = result.map(value => value * 2);
 
@@ -317,15 +317,15 @@ if (mappedResult.isFailure) {
 
 - #### fold
 
-`fold<NewValue>(onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue): NewValue`
+`fold<NewValue>(onSuccess: (value: Value) => NewValue, onFailure: (error: ErrorValue) => NewValue): NewValue`
 
-`fold<NewValue>(handlers: { onSuccess: (value: Value) => NewValue, onFailure: (error: Error) => NewValue }): NewValue`
+`fold<NewValue>(handlers: { onSuccess: (value: Value) => NewValue, onFailure: (error: ErrorValue) => NewValue }): NewValue`
 
 Returns the result of onSuccess for the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated error
 if it is failure.
 
 ```typescript
-const result: Result<number> = Result.success(42);
+const result: Result<number, Error> = Result.success(42);
 
 const transformedResult = result.fold(
     value => `Success! The value is ${value}`,
@@ -336,7 +336,7 @@ console.log(transformedResult); // Output: Success! The value is: 42
 ```
 
 ```typescript
-const result: Result<number> = Result.success(42);
+const result: Result<number, Error> = Result.success(42);
 
 const transformedResult = result.fold({
     onSuccess: (value) => `Success! The value is ${value}`,
@@ -347,7 +347,7 @@ console.log(transformedResult); // Output: Success! The value is: 42
 ```
 
 ```typescript
-const result: Result<number> = Result.failure(Error('action failed'));
+const result: Result<number, Error> = Result.failure(Error('action failed'));
 
 const transformedResult = result.fold(
     value => `Success! The value is ${value}`,
@@ -358,7 +358,7 @@ console.log(transformedResult); // Output: Failure! The error is: action failed
 ```
 
 ```typescript
-const result: Result<number> = Result.failure(Error('action failed'));
+const result: Result<number, Error> = Result.failure(Error('action failed'));
 
 const transformedResult = result.fold({
     onSuccess: (value) => `Success! The value is ${value}`,
@@ -370,13 +370,13 @@ console.log(transformedResult); // Output: Failure! The error is: action failed
 
 - #### recover
 
-`recover<NewValue, Value extends NewValue>(this: Result<Value>, transform: (error: Error) => NewValue): Result<NewValue>`
+`recover<NewValue, Value extends NewValue>(this: Result<Value, ErrorValue>, transform: (error: ErrorValue) => NewValue): Result<NewValue, ErrorValue>`
 
 Returns the encapsulated result of the given transform function applied to the encapsulated error if this instance represents failure or the original
 encapsulated value if it is success.
 
 ```typescript
-const result: Result<number> = Result.failure(Error('action failed'));
+const result: Result<number, Error> = Result.failure(Error('action failed'));
 
 const recoveredResult = result.recover(error => {
     console.error('Recovering from error:', error.message);
@@ -392,7 +392,7 @@ if (recoveredResult.isSuccess) {
 
 - #### onSuccess
 
-`onSuccess(action: (value: Value) => void): Result<Value>`
+`onSuccess(action: (value: Value) => void): Result<Value, ErrorValue>`
 
 Performs the given action on the encapsulated value if this instance represents success. Returns the original Result unchanged.
 
@@ -406,12 +406,12 @@ result.onSuccess(value => {
 
 - #### onFailure
 
-`onFailure(action: (error: Error) => void): Result<Value>`
+`onFailure(action: (error: ErrorValue) => void): Result<Value, ErrorValue>`
 
 Performs the given action on the encapsulated Throwable exception if this instance represents failure. Returns the original Result unchanged.
 
 ```typescript
-const result: Result<string> = Result.failure(Error('action failed'));
+const result: Result<string, Error> = Result.failure(Error('action failed'));
 
 result.onFailure(error => {
     console.error('action failed with error:', error.message); // Output: action failed with error: action failed
@@ -427,7 +427,7 @@ is a string representation of the error.
 
 ```typescript
 const successResult = Result.success('action succeeded');
-const failureResult: Result<string> = Result.failure(Error('action failed'));
+const failureResult: Result<string, Error> = Result.failure(Error('action failed'));
 
 console.log(successResult.toString()); // Output: Success(action succeded)
 console.log(failureResult.toString()); // Output: Failure(action failed)
@@ -435,13 +435,13 @@ console.log(failureResult.toString()); // Output: Failure(action failed)
 
 - #### mapCatching
 
-`mapCatching<NewValue>(transform: (value: Value) => NewValue): Result<NewValue>`
+`mapCatching<NewValue>(transform: (value: Value) => NewValue): Result<NewValue, ErrorValue>`
 
 Returns the encapsulated result of the given transform function applied to the encapsulated value if this instance represents success or the original
 encapsulated error if it is failure.
 
 ```typescript
-const result: Result<number> = Result.success(10);
+const result: Result<number, Error> = Result.success(10);
 
 const transformedResult = result.mapCatching(value => {
     if (value < 0) {
@@ -458,7 +458,7 @@ if (transformedResult.isSuccess) {
 ```
 
 ```typescript
-const result: Result<number> = Result.success(-10);
+const result: Result<number, Error> = Result.success(-10);
 
 const transformedResult = result.mapCatching(value => {
     if (value < 0) {
@@ -476,13 +476,13 @@ if (transformedResult.isSuccess) {
 
 - #### recoverCatching
 
-`recoverCatching<NewValue>(transform: (error: Error) => NewValue): Result<NewValue>`
+`recoverCatching<NewValue>(transform: (error: ErrorValue) => NewValue): Result<NewValue, ErrorValue>`
 
 Returns the encapsulated result of the given transform function applied to the encapsulated error if this instance represents failure or the original
 encapsulated value if it is success.
 
 ```typescript
-const result: Result<number> = Result.failure(new Error('initial failure'));
+const result: Result<number, Error> = Result.failure(new Error('initial failure'));
 
 const recoveredResult = result.recoverCatching(error => {
     if (error.message === 'initial failure') {
@@ -499,7 +499,7 @@ if (recoveredResult.isSuccess) {
 ```
 
 ```typescript
-const result: Result<number> = Result.failure(new Error('final failure'));
+const result: Result<number, Error> = Result.failure(new Error('final failure'));
 
 const recoveredResult = result.recoverCatching(error => {
     if (error.message === 'initial failure') {
@@ -519,7 +519,7 @@ if (recoveredResult.isSuccess) {
 
 ### runCatching
 
-`const runCatching = <Value>(block: () => Value): Result<Value>`
+`const runCatching = <Value>(block: () => Value): Result<Value, Error>`
 
 Calls the specified function block and returns its encapsulated result if invocation was successful, catching any error that was thrown from the block function
 execution and encapsulating it as a failure.
@@ -532,7 +532,7 @@ function riskyOperation(): string {
     return 'action succeeded';
 }
 
-const result: Result<string> = runCatching(() => riskyOperation());
+const result: Result<string, Error> = runCatching(() => riskyOperation());
 
 if (result.isSuccess) {
     console.log('Success:', result.getOrThrow()); // If successful, log the value
@@ -543,7 +543,7 @@ if (result.isSuccess) {
 
 ### isSuccessResult
 
-`const isSuccessResult = <Value>(result: Result<Value>): result is Success<Value> => result instanceof Success`
+`const isSuccessResult = <Value, ErrorValue>(result: Result<Value, ErrorValue>): result is Success<Value, ErrorValue> => result instanceof Success`
 
 A type guard function that checks if the given result is an instance of the Success class.
 
@@ -556,7 +556,7 @@ if (isSuccessResult(result)) {
 
 ### isFailureResult
 
-`const isFailureResult = <Value>(result: Result<Value>): result is Failure<Value> => result instanceof Failure`
+`const isFailureResult = <Value, ErrorValue>(result: Result<Value, ErrorValue>): result is Failure<Value, ErrorValue> => result instanceof Failure`
 
 A type guard function that checks whether a `Result` object is a failure instance.
 
