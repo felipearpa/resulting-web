@@ -20,7 +20,7 @@ jobs:
         run: |
           VERSION=$(grep -m1 -oP '^## \[\K[^\]]+' CHANGELOG.md)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          BODY=$(awk "/## \[$VERSION\]/,/^---/" CHANGELOG.md | sed '1d;$d' | sed '/./,$!d')
+          BODY=$(awk "/## \[$VERSION\]/,/^## \[/" CHANGELOG.md | sed '1d;$d' | sed '/./,$!d' | sed 's/^### /# /')
           echo "changelog<<EOF" >> $GITHUB_ENV
           echo "$BODY" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
