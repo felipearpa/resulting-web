@@ -1,0 +1,261 @@
+{"0": {
+    "doc": "Getting Started",
+    "title": "Getting Started",
+    "content": " ",
+    "url": "/resulting-web/getting-started/",
+    
+    "relUrl": "/getting-started/"
+  },"1": {
+    "doc": "Getting Started",
+    "title": "Table of contents",
+    "content": ". | Installation | Basic Usage | Usage with Angular | Usage with fetch | Chaining Operations | Error Recovery | Pattern Matching with fold | Custom Error Types | Safe Execution with runCatching | . ",
+    "url": "/resulting-web/getting-started/#table-of-contents",
+    
+    "relUrl": "/getting-started/#table-of-contents"
+  },"2": {
+    "doc": "Getting Started",
+    "title": "Installation",
+    "content": "Install via npm: . npm install @felipearpa/resulting . Or using yarn: . yarn add @felipearpa/resulting . ",
+    "url": "/resulting-web/getting-started/#installation",
+    
+    "relUrl": "/getting-started/#installation"
+  },"3": {
+    "doc": "Getting Started",
+    "title": "Basic Usage",
+    "content": "import { Result } from '@felipearpa/resulting'; const success = Result.success('action succeeded'); console.log(success.isSuccess); // true console.log(success.getOrNull()); // \"action succeeded\" const failure = Result.failure(new Error('action failed')); console.log(failure.isFailure); // true console.log(failure.errorOrNull()?.message); // \"action failed\" . ",
+    "url": "/resulting-web/getting-started/#basic-usage",
+    
+    "relUrl": "/getting-started/#basic-usage"
+  },"4": {
+    "doc": "Getting Started",
+    "title": "Usage with Angular",
+    "content": "@Injectable({ providedIn: 'root' }) export class UserService { private readonly apiUrl = 'https://api.example.com/users'; constructor(private http: HttpClient) {} getUser(id: number): Observable&lt;Result&lt;User, Error&gt;&gt; { return this.http.get&lt;User&gt;(`${this.apiUrl}/${id}`).pipe( map(user =&gt; Result.success(user)), catchError(error =&gt; of(Result.failure(new Error(`Failed to fetch user: ${error.message}`))) ) ); } } . ",
+    "url": "/resulting-web/getting-started/#usage-with-angular",
+    
+    "relUrl": "/getting-started/#usage-with-angular"
+  },"5": {
+    "doc": "Getting Started",
+    "title": "Usage with fetch",
+    "content": "class UserService { private readonly apiUrl = 'https://api.example.com/users'; async getUser(id: number): Promise&lt;Result&lt;User, Error&gt;&gt; { try { const response = await fetch(`${this.apiUrl}/${id}`); if (!response.ok) { throw new Error(`HTTP ${response.status}: ${response.statusText}`); } const user: User = await response.json(); return Result.success(user); } catch (error) { return Result.failure( new Error(`Failed to fetch user: ${error instanceof Error ? error.message : 'Unknown error'}`) ); } } } . ",
+    "url": "/resulting-web/getting-started/#usage-with-fetch",
+    
+    "relUrl": "/getting-started/#usage-with-fetch"
+  },"6": {
+    "doc": "Getting Started",
+    "title": "Chaining Operations",
+    "content": "Result methods return new Result instances, enabling fluent chaining: . const result: Result&lt;number, Error&gt; = Result.success(10); const output = result .map(value =&gt; value * 2) .onSuccess(value =&gt; console.log('Doubled:', value)) .getOrDefault(0); console.log(output); // 20 . ",
+    "url": "/resulting-web/getting-started/#chaining-operations",
+    
+    "relUrl": "/getting-started/#chaining-operations"
+  },"7": {
+    "doc": "Getting Started",
+    "title": "Error Recovery",
+    "content": "const result: Result&lt;number, Error&gt; = Result.failure(new Error('not found')); const recovered = result.recover(error =&gt; { console.error('Recovering from:', error.message); return 100; }); console.log(recovered.getOrThrow()); // 100 . ",
+    "url": "/resulting-web/getting-started/#error-recovery",
+    
+    "relUrl": "/getting-started/#error-recovery"
+  },"8": {
+    "doc": "Getting Started",
+    "title": "Pattern Matching with fold",
+    "content": "const result: Result&lt;number, Error&gt; = Result.success(42); const message = result.fold( value =&gt; `Success! The value is ${value}`, error =&gt; `Failure! ${error.message}` ); console.log(message); // \"Success! The value is 42\" . Or using the object parameter syntax: . const message = result.fold({ onSuccess: value =&gt; `Success! The value is ${value}`, onFailure: error =&gt; `Failure! ${error.message}` }); . ",
+    "url": "/resulting-web/getting-started/#pattern-matching-with-fold",
+    
+    "relUrl": "/getting-started/#pattern-matching-with-fold"
+  },"9": {
+    "doc": "Getting Started",
+    "title": "Custom Error Types",
+    "content": "Result supports generic error types beyond the default Error: . type ApiError = { code: number; message: string }; const result: Result&lt;string, ApiError&gt; = Result.failure({ code: 404, message: 'Not found' }); if (result.isFailure) { const error = result.errorOrNull(); console.error(`Error ${error?.code}: ${error?.message}`); } . ",
+    "url": "/resulting-web/getting-started/#custom-error-types",
+    
+    "relUrl": "/getting-started/#custom-error-types"
+  },"10": {
+    "doc": "Getting Started",
+    "title": "Safe Execution with runCatching",
+    "content": "import { runCatching } from '@felipearpa/resulting'; function riskyOperation(): string { if (Math.random() &gt; 0.5) { throw new Error('something went wrong'); } return 'action succeeded'; } const result = runCatching(() =&gt; riskyOperation()); result .onSuccess(value =&gt; console.log('Success:', value)) .onFailure(error =&gt; console.error('Failure:', error.message)); . ",
+    "url": "/resulting-web/getting-started/#safe-execution-with-runcatching",
+    
+    "relUrl": "/getting-started/#safe-execution-with-runcatching"
+  },"11": {
+    "doc": "API Reference",
+    "title": "API Reference",
+    "content": "The library provides a Result class and utility functions for functional error handling. | Export | Description | . | Result&lt;Value, ErrorValue&gt; | Discriminated union encapsulating a successful outcome with a value or a failure with an error | . | runCatching | Executes a function block and returns its result, catching any thrown errors | . | isSuccessResult / isFailureResult | Type guard functions for narrowing Result to Success or Failure | . All exports are available from the package entry point: . import { Result, runCatching, isSuccessResult, isFailureResult } from '@felipearpa/resulting'; . ",
+    "url": "/resulting-web/api/",
+    
+    "relUrl": "/api/"
+  },"12": {
+    "doc": "Home",
+    "title": "Resulting",
+    "content": "A Result type for TypeScript/JavaScript based on Kotlin’s Result type. Get Started View on GitHub . ",
+    "url": "/resulting-web/#resulting",
+    
+    "relUrl": "/#resulting"
+  },"13": {
+    "doc": "Home",
+    "title": "Overview",
+    "content": "The Resulting package provides a Result class designed to handle success and failure scenarios in a functional programming style. It encapsulates a result, which can either be a Success with a value or a Failure with an error, offering methods to safely operate on these results. | Export | Description | . | Result | Discriminated union encapsulating a successful value or an error | . | runCatching | Executes a function and wraps the outcome in a Result | . | isSuccessResult / isFailureResult | Type guard functions for narrowing Result types | . ",
+    "url": "/resulting-web/#overview",
+    
+    "relUrl": "/#overview"
+  },"14": {
+    "doc": "Home",
+    "title": "Why a Result type",
+    "content": "Handling results effectively is vital in modern software development, especially when dealing with API responses. A Result type provides a robust mechanism to manage success and failure scenarios in a predictable and consistent way. | Clarity and Explicitness — The distinction between a successful or failed operation becomes explicit, making your code self-explanatory. | Type-Safe Responses — Strict type safety ensures developers handle both success and failure states, reducing runtime errors. | Streamlined Pattern — Chaining operations such as mapping, transforming, or recovering from errors can be handled elegantly. | Consistency Across Codebases — A uniform schema for results simplifies maintenance and integrations between services. | . ",
+    "url": "/resulting-web/#why-a-result-type",
+    
+    "relUrl": "/#why-a-result-type"
+  },"15": {
+    "doc": "Home",
+    "title": "Quick Example",
+    "content": "import { Result, isSuccessResult, isFailureResult } from '@felipearpa/resulting'; const successResult = Result.success('hello'); console.log(successResult.isSuccess); // true const failureResult = Result.failure(new Error('oops')); console.log(failureResult.isFailure); // true if (isSuccessResult(successResult)) { console.log(successResult.value); // \"hello\" } if (isFailureResult(failureResult)) { console.log(failureResult.error.message); // \"oops\" } . ",
+    "url": "/resulting-web/#quick-example",
+    
+    "relUrl": "/#quick-example"
+  },"16": {
+    "doc": "Home",
+    "title": "Platforms",
+    "content": ". | Node.js (CommonJS and ES Modules) | Browser (ES Modules) | TypeScript (full type definitions included) | . ",
+    "url": "/resulting-web/#platforms",
+    
+    "relUrl": "/#platforms"
+  },"17": {
+    "doc": "Home",
+    "title": "Home",
+    "content": " ",
+    "url": "/resulting-web/",
+    
+    "relUrl": "/"
+  },"18": {
+    "doc": "Result",
+    "title": "Result&lt;Value, ErrorValue&gt;",
+    "content": "A discriminated union that encapsulates a successful outcome with a value of type Value or a failure with an arbitrary error of type ErrorValue (defaults to Error). ",
+    "url": "/resulting-web/api/result/#resultvalue-errorvalue",
+    
+    "relUrl": "/api/result/#resultvalue-errorvalue"
+  },"19": {
+    "doc": "Result",
+    "title": "Table of contents",
+    "content": ". | Creating Results . | success | failure | . | State Checks . | isSuccess | isFailure | . | Value Access . | getOrNull | getOrThrow | getOrDefault | getOrElse | errorOrNull | . | Transformations . | map | mapError | mapCatching | recover | recoverCatching | fold | . | Side Effects . | onSuccess | onFailure | . | Utility . | toString | . | . ",
+    "url": "/resulting-web/api/result/#table-of-contents",
+    
+    "relUrl": "/api/result/#table-of-contents"
+  },"20": {
+    "doc": "Result",
+    "title": "Creating Results",
+    "content": "success . static success&lt;Value, ErrorValue = Error&gt;(value: Value): Result&lt;Value, ErrorValue&gt; . Returns an instance that encapsulates the given value as successful value. const result = Result.success('action succeeded'); . failure . static failure&lt;Value, ErrorValue = Error&gt;(error: ErrorValue): Result&lt;Value, ErrorValue&gt; . Returns an instance that encapsulates the given error as failure. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); . ",
+    "url": "/resulting-web/api/result/#creating-results",
+    
+    "relUrl": "/api/result/#creating-results"
+  },"21": {
+    "doc": "Result",
+    "title": "State Checks",
+    "content": "isSuccess . isSuccess: boolean . Returns true if this instance represents a successful outcome. In this case isFailure returns false. const result = Result.success('action succeeded'); if (result.isSuccess) { console.log('action succeeded with value:', result.getOrNull()); } else { console.error('action failed with error:', result.errorOrNull()); } . isFailure . isFailure: boolean . Returns true if this instance represents a failed outcome. In this case isSuccess returns false. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); if (result.isFailure) { console.error('action failed with error:', result.errorOrNull()); } . ",
+    "url": "/resulting-web/api/result/#state-checks",
+    
+    "relUrl": "/api/result/#state-checks"
+  },"22": {
+    "doc": "Result",
+    "title": "Value Access",
+    "content": "getOrNull . getOrNull(): Value | null . Returns the encapsulated value if this instance represents success or null if it is failure. const result = Result.success('action succeeded'); const value = result.getOrNull(); // \"action succeeded\" . const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); const value = result.getOrNull(); // null . getOrThrow . getOrThrow(): Value . Returns the encapsulated value if this instance represents success or throws the encapsulated error if it is failure. const result = Result.success('action succeeded'); const value = result.getOrThrow(); // \"action succeeded\" . const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); const value = result.getOrThrow(); // throws Error('action failed') . getOrDefault . getOrDefault(defaultValue: Value): Value . Returns the encapsulated value if this instance represents success or the defaultValue if it is failure. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); const value = result.getOrDefault('default value'); console.log(value); // \"default value\" . getOrElse . getOrElse&lt;NewValue&gt;(onFailure: (error: ErrorValue) =&gt; NewValue): NewValue . Returns the encapsulated value if this instance represents success or the result of onFailure function for the encapsulated error if it is failure. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); const value = result.getOrElse(error =&gt; { console.error('error occurred:', error.message); return 'fallback value'; }); console.log(value); // \"fallback value\" . errorOrNull . errorOrNull(): ErrorValue | null . Returns the encapsulated error if this instance represents failure or null if it is success. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); const error = result.errorOrNull(); console.error(error?.message); // \"action failed\" . const result = Result.success('value'); const error = result.errorOrNull(); // null . ",
+    "url": "/resulting-web/api/result/#value-access",
+    
+    "relUrl": "/api/result/#value-access"
+  },"23": {
+    "doc": "Result",
+    "title": "Transformations",
+    "content": "map . map&lt;NewValue&gt;(transform: (value: Value) =&gt; NewValue): Result&lt;NewValue, ErrorValue&gt; . Returns a new Result applying the given transform function to the encapsulated value if this instance represents success, or the original failure unchanged. const result: Result&lt;number, Error&gt; = Result.success(10); const transformed = result.map(value =&gt; value * 2); console.log(transformed.getOrThrow()); // 20 . const result: Result&lt;number, Error&gt; = Result.failure(new Error('failed')); const transformed = result.map(value =&gt; value * 2); console.log(transformed.isFailure); // true . mapError . mapError&lt;NewErrorValue&gt;(transform: (error: ErrorValue) =&gt; NewErrorValue): Result&lt;Value, NewErrorValue&gt; . Returns a new Result with the same success value if this instance is successful, or with the error transformed by the provided function if it is a failure. const result: Result&lt;number, Error&gt; = Result.failure(new Error('original error')); const mapped = result.mapError(error =&gt; `Mapped: ${error.message}`); if (mapped.isFailure) { console.error(mapped.errorOrNull()); // \"Mapped: original error\" } . mapCatching . mapCatching&lt;NewValue&gt;(transform: (value: Value) =&gt; NewValue): Result&lt;NewValue, ErrorValue&gt; . Returns the encapsulated result of the given transform function applied to the encapsulated value if this instance represents success, or the original encapsulated error if it is failure. If the transform function throws, the exception is caught and wrapped as a failure. const result: Result&lt;number, Error&gt; = Result.success(10); const transformed = result.mapCatching(value =&gt; { if (value &lt; 0) { throw new Error('negative value'); } return value * 2; }); console.log(transformed.getOrThrow()); // 20 . const result: Result&lt;number, Error&gt; = Result.success(-10); const transformed = result.mapCatching(value =&gt; { if (value &lt; 0) { throw new Error('negative value'); } return value * 2; }); console.error(transformed.errorOrNull()?.message); // \"negative value\" . recover . recover&lt;NewValue&gt;(transform: (error: ErrorValue) =&gt; NewValue): Result&lt;NewValue, ErrorValue&gt; . Returns the encapsulated result of the given transform function applied to the encapsulated error if this instance represents failure, or the original encapsulated value if it is success. const result: Result&lt;number, Error&gt; = Result.failure(new Error('action failed')); const recovered = result.recover(error =&gt; { console.error('Recovering from error:', error.message); return 100; }); console.log(recovered.getOrThrow()); // 100 . recoverCatching . recoverCatching&lt;NewValue&gt;(transform: (error: ErrorValue) =&gt; NewValue): Result&lt;NewValue, ErrorValue&gt; . Returns the encapsulated result of the given transform function applied to the encapsulated error if this instance represents failure, or the original encapsulated value if it is success. If the transform function throws, the exception is caught and wrapped as a failure. const result: Result&lt;number, Error&gt; = Result.failure(new Error('initial failure')); const recovered = result.recoverCatching(error =&gt; { if (error.message === 'initial failure') { throw new Error('recovery failed'); } return 42; }); console.error(recovered.errorOrNull()?.message); // \"recovery failed\" . const result: Result&lt;number, Error&gt; = Result.failure(new Error('final failure')); const recovered = result.recoverCatching(error =&gt; { if (error.message === 'initial failure') { throw new Error('recovery failed'); } return 42; }); console.log(recovered.getOrThrow()); // 42 . fold . fold&lt;NewValue&gt;(onSuccess: (value: Value) =&gt; NewValue, onFailure: (error: ErrorValue) =&gt; NewValue): NewValue . fold&lt;NewValue&gt;(handlers: { onSuccess: (value: Value) =&gt; NewValue, onFailure: (error: ErrorValue) =&gt; NewValue }): NewValue . Returns the result of onSuccess for the encapsulated value if this instance represents success, or the result of onFailure for the encapsulated error if it is failure. const result: Result&lt;number, Error&gt; = Result.success(42); const message = result.fold( value =&gt; `Success! The value is ${value}`, error =&gt; `Failure! The error is: ${error.message}` ); console.log(message); // \"Success! The value is 42\" . Object parameter syntax: . const result: Result&lt;number, Error&gt; = Result.success(42); const message = result.fold({ onSuccess: value =&gt; `Success! The value is ${value}`, onFailure: error =&gt; `Failure! The error is: ${error.message}` }); console.log(message); // \"Success! The value is 42\" . ",
+    "url": "/resulting-web/api/result/#transformations",
+    
+    "relUrl": "/api/result/#transformations"
+  },"24": {
+    "doc": "Result",
+    "title": "Side Effects",
+    "content": "onSuccess . onSuccess(action: (value: Value) =&gt; void): Result&lt;Value, ErrorValue&gt; . Performs the given action on the encapsulated value if this instance represents success. Returns the original Result unchanged for chaining. const result = Result.success('action succeeded'); result.onSuccess(value =&gt; { console.log('action succeeded with value:', value); }); // Output: action succeeded with value: action succeeded . onFailure . onFailure(action: (error: ErrorValue) =&gt; void): Result&lt;Value, ErrorValue&gt; . Performs the given action on the encapsulated error if this instance represents failure. Returns the original Result unchanged for chaining. const result: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); result.onFailure(error =&gt; { console.error('action failed with error:', error.message); }); // Output: action failed with error: action failed . ",
+    "url": "/resulting-web/api/result/#side-effects",
+    
+    "relUrl": "/api/result/#side-effects"
+  },"25": {
+    "doc": "Result",
+    "title": "Utility",
+    "content": "toString . toString(): string . Returns a string Success(v) if this instance represents success where v is a string representation of the value, or Failure(x) if it is failure where x is a string representation of the error. const success = Result.success('action succeeded'); console.log(success.toString()); // \"Success(action succeeded)\" const failure: Result&lt;string, Error&gt; = Result.failure(new Error('action failed')); console.log(failure.toString()); // \"Failure(action failed)\" . ",
+    "url": "/resulting-web/api/result/#utility",
+    
+    "relUrl": "/api/result/#utility"
+  },"26": {
+    "doc": "Result",
+    "title": "Result",
+    "content": " ",
+    "url": "/resulting-web/api/result/",
+    
+    "relUrl": "/api/result/"
+  },"27": {
+    "doc": "runCatching",
+    "title": "runCatching",
+    "content": "Calls the specified function block and returns its encapsulated result if invocation was successful, catching any error that was thrown from the block function execution and encapsulating it as a failure. ",
+    "url": "/resulting-web/api/run-catching/",
+    
+    "relUrl": "/api/run-catching/"
+  },"28": {
+    "doc": "runCatching",
+    "title": "Table of contents",
+    "content": ". | Signature | Usage . | Successful execution | Catching errors | Combining with Result methods | . | Error Handling | . ",
+    "url": "/resulting-web/api/run-catching/#table-of-contents",
+    
+    "relUrl": "/api/run-catching/#table-of-contents"
+  },"29": {
+    "doc": "runCatching",
+    "title": "Signature",
+    "content": "function runCatching&lt;Value&gt;(block: () =&gt; Value): Result&lt;Value, Error&gt; . ",
+    "url": "/resulting-web/api/run-catching/#signature",
+    
+    "relUrl": "/api/run-catching/#signature"
+  },"30": {
+    "doc": "runCatching",
+    "title": "Usage",
+    "content": "Successful execution . import { runCatching } from '@felipearpa/resulting'; const result = runCatching(() =&gt; 'hello'); console.log(result.isSuccess); // true console.log(result.getOrThrow()); // \"hello\" . Catching errors . import { runCatching } from '@felipearpa/resulting'; function riskyOperation(): string { if (Math.random() &gt; 0.5) { throw new Error('something went wrong'); } return 'action succeeded'; } const result = runCatching(() =&gt; riskyOperation()); if (result.isSuccess) { console.log('Success:', result.getOrThrow()); } else { console.error('Failure:', result.errorOrNull()?.message); } . Combining with Result methods . import { runCatching } from '@felipearpa/resulting'; const result = runCatching(() =&gt; JSON.parse('{\"name\": \"Alice\"}')) .map(data =&gt; data.name.toUpperCase()) .getOrDefault('UNKNOWN'); console.log(result); // \"ALICE\" . import { runCatching } from '@felipearpa/resulting'; const result = runCatching(() =&gt; JSON.parse('invalid json')) .map(data =&gt; data.name.toUpperCase()) .getOrDefault('UNKNOWN'); console.log(result); // \"UNKNOWN\" . ",
+    "url": "/resulting-web/api/run-catching/#usage",
+    
+    "relUrl": "/api/run-catching/#usage"
+  },"31": {
+    "doc": "runCatching",
+    "title": "Error Handling",
+    "content": "runCatching handles various types of thrown values: . | Thrown Value | Encapsulated Error | . | Error instance | The original Error | . | string | new Error(string) | . | Other object | new Error(String(object)) | . ",
+    "url": "/resulting-web/api/run-catching/#error-handling",
+    
+    "relUrl": "/api/run-catching/#error-handling"
+  },"32": {
+    "doc": "Type Guards",
+    "title": "Type Guards",
+    "content": "Type guard functions for narrowing Result instances to their concrete Success or Failure types. ",
+    "url": "/resulting-web/api/type-guards/",
+    
+    "relUrl": "/api/type-guards/"
+  },"33": {
+    "doc": "Type Guards",
+    "title": "Table of contents",
+    "content": ". | isSuccessResult | isFailureResult | When to use type guards | . ",
+    "url": "/resulting-web/api/type-guards/#table-of-contents",
+    
+    "relUrl": "/api/type-guards/#table-of-contents"
+  },"34": {
+    "doc": "Type Guards",
+    "title": "isSuccessResult",
+    "content": "function isSuccessResult&lt;Value, ErrorValue&gt;( result: Result&lt;Value, ErrorValue&gt; ): result is Success&lt;Value, ErrorValue&gt; . A type guard that checks if the given result is an instance of Success. When true, TypeScript narrows the type, giving direct access to the value property. import { Result, isSuccessResult } from '@felipearpa/resulting'; const result = Result.success('value'); if (isSuccessResult(result)) { console.log(result.value); // \"value\" — type-safe access } . ",
+    "url": "/resulting-web/api/type-guards/#issuccessresult",
+    
+    "relUrl": "/api/type-guards/#issuccessresult"
+  },"35": {
+    "doc": "Type Guards",
+    "title": "isFailureResult",
+    "content": "function isFailureResult&lt;Value, ErrorValue&gt;( result: Result&lt;Value, ErrorValue&gt; ): result is Failure&lt;Value, ErrorValue&gt; . A type guard that checks if the given result is an instance of Failure. When true, TypeScript narrows the type, giving direct access to the error property. import { Result, isFailureResult } from '@felipearpa/resulting'; const result = Result.failure(new Error('something went wrong')); if (isFailureResult(result)) { console.log(result.error.message); // \"something went wrong\" — type-safe access } . ",
+    "url": "/resulting-web/api/type-guards/#isfailureresult",
+    
+    "relUrl": "/api/type-guards/#isfailureresult"
+  },"36": {
+    "doc": "Type Guards",
+    "title": "When to use type guards",
+    "content": "Type guards are useful when you need direct property access to value or error rather than using accessor methods like getOrNull() or errorOrNull(). // Using type guards if (isSuccessResult(result)) { doSomething(result.value); // direct access } // Equivalent using accessor methods const value = result.getOrNull(); if (value !== null) { doSomething(value); } . Both approaches are valid. Type guards are particularly helpful in exhaustive checks: . function handleResult(result: Result&lt;string, Error&gt;): string { if (isSuccessResult(result)) { return `Got: ${result.value}`; } if (isFailureResult(result)) { return `Error: ${result.error.message}`; } return 'Unknown state'; } . ",
+    "url": "/resulting-web/api/type-guards/#when-to-use-type-guards",
+    
+    "relUrl": "/api/type-guards/#when-to-use-type-guards"
+  }
+}

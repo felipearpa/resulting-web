@@ -1,0 +1,22 @@
+title: resulting
+description: A Result type for TypeScript/JavaScript based on Kotlin's Result type.
+baseurl: "/resulting-web"
+url: ""
+
+remote_theme: just-the-docs/just-the-docs
+
+color_scheme: dark
+
+aux_links:
+  "GitHub":
+    - "https://github.com/felipearpa/resulting-web"
+
+nav_sort: order
+
+heading_anchors: true
+
+permalink: pretty
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
